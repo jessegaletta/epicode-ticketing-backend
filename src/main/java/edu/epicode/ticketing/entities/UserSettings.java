@@ -13,6 +13,7 @@ public class UserSettings {
 
     private boolean emailNotifications;
     private boolean darkMode;
+    private String timezone;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -24,6 +25,7 @@ public class UserSettings {
         this.user = user;
         this.darkMode = false;
         this.emailNotifications = false;
+        this.timezone = "Europe/Rome";
     }
 
     public UUID getId() {
@@ -46,6 +48,14 @@ public class UserSettings {
         this.darkMode = darkMode;
     }
 
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
     public User getUser() {
         return user;
     }
@@ -56,6 +66,7 @@ public class UserSettings {
                 "id=" + id +
                 ", emailNotifications=" + emailNotifications +
                 ", darkMode=" + darkMode +
+                ", timezone='" + timezone + '\'' +
                 ", user=" + user +
                 '}';
     }

@@ -2,6 +2,8 @@ package edu.epicode.ticketing.controllers;
 
 import edu.epicode.ticketing.entities.User;
 import edu.epicode.ticketing.payloads.users.NewUserDTO;
+import edu.epicode.ticketing.payloads.users.UpdateUserProfileDTO;
+import edu.epicode.ticketing.payloads.users.UserProfileDTO;
 import edu.epicode.ticketing.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,9 +64,14 @@ public class UserController {
         this.usersService.uploadProfilePicture(userId, file);
     }
 
+    @GetMapping("/me")
+    public UserProfileDTO getOwnProfile(@AuthenticationPrincipal User currentAuthenticateUser){
+        return this.usersService.getProfile(currentAuthenticateUser);
+    }
+
     @PutMapping("/me")
-    public User updateOwnProfile(@AuthenticationPrincipal User currentAuthenticateUser, @RequestBody NewUserDTO body){
-        return this.usersService.findByIdAndUpdate(currentAuthenticateUser.getId(), body);
+    public UserProfileDTO updateOwnProfile(@AuthenticationPrincipal User currentAuthenticateUser, @RequestBody UpdateUserProfileDTO body){
+        return this.usersService.updateProfile(currentAuthenticateUser, body);
     }
 
     @DeleteMapping("/me")

@@ -26,8 +26,7 @@ public class AuthService {
         // 1.1. search for user by email
         User found = this.usersService.findByEmail(body.email());
         // 1.2 if user exists verify password
-        // TODO: Improve security here
-        if(found.getPassword().equals((body.password()))){
+        if(bcrypt.matches(body.password(), found.getPassword())){
             return this.tokenTools.generateToken(found);
         } else {
             throw new UnauthorizedException("Wrong credentials!");

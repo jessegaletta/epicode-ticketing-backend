@@ -8,6 +8,8 @@ import edu.epicode.ticketing.exceptions.NotFoundException;
 import edu.epicode.ticketing.exceptions.ValidationException;
 import edu.epicode.ticketing.payloads.users.NewUserDTO;
 import edu.epicode.ticketing.payloads.users.NewUserResponseDTO;
+import edu.epicode.ticketing.payloads.users.UpdateUserProfileDTO;
+import edu.epicode.ticketing.payloads.users.UserProfileDTO;
 import edu.epicode.ticketing.repositories.UsersRepository;
 import edu.epicode.ticketing.tools.MailgunSender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,10 +77,47 @@ public class UsersService {
         found.setFirstName(body.firstName());
         found.setLastName(body.lastName());
         found.setEmail(body.email());
-        found.setPassword(body.password());
+        found.setPassword(bcrypt.encode(body.password()));
         found.setAvatarURL("https://ui-avatars.com/api/?name=" + body.firstName() + "+" + body.lastName());
 
         return this.usersRepository.save(found);
+    }
+
+    public UserProfileDTO getProfile(User user) {
+        UserSettings settings = user.getUserSettings();
+        if (settings == null) {
+            settings = new UserSettings(user);
+        }
+        return new UserProfileDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getAvatarURL(),
+                user.getRole(),
+                settings.isEmailNotifications(),
+                settings.isDarkMode(),
+                settings.getTimezone()
+        );
+    }
+
+    public UserProfileDTO updateProfile(User user, UpdateUserProfileDTO body) {
+        user.setFirstName(body.firstName());
+        user.setLastName(body.lastName());
+        user.setEmail(body.email());
+        
+        UserSettings settings = user.getUserSettings();
+        if (settings == null) {
+            settings = new UserSettings(user);
+            user.setUserSettings(settings);
+        }
+        
+        settings.setEmailNotifications(body.emailNotifications());
+        settings.setDarkMode(body.darkMode());
+        settings.setTimezone(body.timezone());
+
+        User savedUser = this.usersRepository.save(user);
+        return getProfile(savedUser);
     }
 
     public void findByIdAndDelete(UUID userId){
