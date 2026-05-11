@@ -14,6 +14,8 @@ public class UserSettings {
 
     private boolean darkMode;
     private String timezone;
+    private String dateFormat;
+    private String timeFormat;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -25,6 +27,8 @@ public class UserSettings {
         this.user = user;
         this.darkMode = true;
         this.timezone = "Europe/Amsterdam";
+        this.dateFormat = "DD/MM/YYYY";
+        this.timeFormat = "24h";
     }
 
     public UUID getId() {
@@ -49,6 +53,22 @@ public class UserSettings {
         this.timezone = timezone;
     }
 
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
+
+    public String getTimeFormat() {
+        return timeFormat;
+    }
+
+    public void setTimeFormat(String timeFormat) {
+        this.timeFormat = timeFormat;
+    }
+
     public User getUser() {
         return user;
     }
@@ -59,6 +79,8 @@ public class UserSettings {
                 "id=" + id +
                 ", darkMode=" + darkMode +
                 ", timezone='" + timezone + '\'' +
+                ", dateFormat='" + dateFormat + '\'' +
+                ", timeFormat='" + timeFormat + '\'' +
                 ", user=" + user +
                 '}';
     }

@@ -19,6 +19,8 @@ public record UpdateUserProfileDTO(
 
 
         boolean darkMode,
-        String timezone
+        String timezone,
+        String dateFormat,
+        String timeFormat
 ) {
 }

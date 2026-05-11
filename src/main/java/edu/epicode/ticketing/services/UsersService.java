@@ -96,7 +96,9 @@ public class UsersService {
                 user.getAvatarURL(),
                 user.getRole(),
                 settings.isDarkMode(),
-                settings.getTimezone()
+                settings.getTimezone(),
+                settings.getDateFormat(),
+                settings.getTimeFormat()
         );
     }
 
@@ -113,6 +115,8 @@ public class UsersService {
         
         settings.setDarkMode(body.darkMode());
         settings.setTimezone(body.timezone());
+        settings.setDateFormat(body.dateFormat());
+        settings.setTimeFormat(body.timeFormat());
 
         User savedUser = this.usersRepository.save(user);
         return getProfile(savedUser);
