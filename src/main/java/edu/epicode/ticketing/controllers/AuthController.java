@@ -7,9 +7,7 @@ import edu.epicode.ticketing.payloads.users.NewUserDTO;
 import edu.epicode.ticketing.payloads.users.NewUserResponseDTO;
 import edu.epicode.ticketing.services.AuthService;
 import edu.epicode.ticketing.services.UsersService;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,18 +24,14 @@ public class AuthController {
     }
 
    @PostMapping("login")
-    public LoginRespDTO login(@RequestBody LoginDTO payload){
+    public LoginRespDTO login(@Validated @RequestBody LoginDTO payload){
         return new LoginRespDTO(this.authService.checkCredentialsAndGenerateToken(payload));
    }
 
     //2.
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public NewUserResponseDTO NewUserResponseDTO(@Validated @RequestBody NewUserDTO body, BindingResult validationResult){
-        if(validationResult.hasErrors()) {
-            validationResult.getFieldErrors().forEach(fieldError -> System.out.println(fieldError.getDefaultMessage()));
-            throw new ValidationException(validationResult.getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
-        }
+    public NewUserResponseDTO NewUserResponseDTO(@Validated @RequestBody NewUserDTO body){
         return this.usersService.saveUser(body);
     }
 }

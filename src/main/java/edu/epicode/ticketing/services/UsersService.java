@@ -95,7 +95,6 @@ public class UsersService {
                 user.getEmail(),
                 user.getAvatarURL(),
                 user.getRole(),
-                settings.isEmailNotifications(),
                 settings.isDarkMode(),
                 settings.getTimezone()
         );
@@ -112,7 +111,6 @@ public class UsersService {
             user.setUserSettings(settings);
         }
         
-        settings.setEmailNotifications(body.emailNotifications());
         settings.setDarkMode(body.darkMode());
         settings.setTimezone(body.timezone());
 

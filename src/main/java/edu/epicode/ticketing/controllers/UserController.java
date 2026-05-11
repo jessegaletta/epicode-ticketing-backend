@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +46,7 @@ public class UserController {
     //4.
     @PutMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
-    public User updateUserById(@PathVariable UUID userId, @RequestBody NewUserDTO body){
+    public User updateUserById(@PathVariable UUID userId, @Validated @RequestBody NewUserDTO body){
         return this.usersService.findByIdAndUpdate(userId, body);
     }
 
@@ -70,7 +71,7 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public UserProfileDTO updateOwnProfile(@AuthenticationPrincipal User currentAuthenticateUser, @RequestBody UpdateUserProfileDTO body){
+    public UserProfileDTO updateOwnProfile(@AuthenticationPrincipal User currentAuthenticateUser, @Validated @RequestBody UpdateUserProfileDTO body){
         return this.usersService.updateProfile(currentAuthenticateUser, body);
     }
 

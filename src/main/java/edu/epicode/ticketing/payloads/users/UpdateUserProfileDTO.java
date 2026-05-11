@@ -17,7 +17,7 @@ public record UpdateUserProfileDTO(
         @Email(message = "Email must be valid")
         String email,
 
-        boolean emailNotifications,
+
         boolean darkMode,
         String timezone
 ) {

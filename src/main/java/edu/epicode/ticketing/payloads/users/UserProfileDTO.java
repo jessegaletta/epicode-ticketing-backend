@@ -11,7 +11,7 @@ public record UserProfileDTO(
         String email,
         String avatarURL,
         Role role,
-        boolean emailNotifications,
+
         boolean darkMode,
         String timezone
 ) {

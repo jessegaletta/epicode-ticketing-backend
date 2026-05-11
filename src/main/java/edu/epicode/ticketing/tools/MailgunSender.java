@@ -29,7 +29,7 @@ public class MailgunSender {
                 .queryString("from", this.sender)
                 .queryString("to", recipient.getEmail())
                 .queryString("subject", "Welcome on the platform!")
-                .queryString("test", "Hello, " + recipient.getFirstName() + ", registration happened successfully!")
+                .queryString("text", "Hello, " + recipient.getFirstName() + ", registration happened successfully!")
                 .asJson();
         System.out.println(response.getBody());
     }

@@ -11,7 +11,7 @@ public class UserSettings {
     @GeneratedValue
     private UUID id;
 
-    private boolean emailNotifications;
+
     private boolean darkMode;
     private String timezone;
 
@@ -23,22 +23,15 @@ public class UserSettings {
 
     public UserSettings(User user){
         this.user = user;
-        this.darkMode = false;
-        this.emailNotifications = false;
-        this.timezone = "Europe/Rome";
+        this.darkMode = true;
+        this.timezone = "Europe/Amsterdam";
     }
 
     public UUID getId() {
         return id;
     }
 
-    public boolean isEmailNotifications() {
-        return emailNotifications;
-    }
 
-    public void setEmailNotifications(boolean emailNotifications) {
-        this.emailNotifications = emailNotifications;
-    }
 
     public boolean isDarkMode() {
         return darkMode;
@@ -64,7 +57,6 @@ public class UserSettings {
     public String toString() {
         return "UserSettings{" +
                 "id=" + id +
-                ", emailNotifications=" + emailNotifications +
                 ", darkMode=" + darkMode +
                 ", timezone='" + timezone + '\'' +
                 ", user=" + user +

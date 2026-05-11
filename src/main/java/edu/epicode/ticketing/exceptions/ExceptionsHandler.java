@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +18,13 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST) //400
     public ErrorsWithListDTO handleValidationError(ValidationException ex){
         return new ErrorsWithListDTO("Payload errors", LocalDateTime.now(), ex.getErrorsList());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) //400
+    public ErrorsWithListDTO handleValidationExceptions(MethodArgumentNotValidException ex) {
+        return new ErrorsWithListDTO("Payload errors", LocalDateTime.now(), 
+            ex.getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
     }
 
     @ExceptionHandler(UnauthorizedException.class)
