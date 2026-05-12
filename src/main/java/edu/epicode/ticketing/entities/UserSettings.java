@@ -26,7 +26,7 @@ public class UserSettings {
     public UserSettings(User user){
         this.user = user;
         this.darkMode = true;
-        this.timezone = "Europe/Amsterdam";
+        this.timezone = "Europe/Belgrade";
         this.dateFormat = "DD/MM/YYYY";
         this.timeFormat = "24h";
     }

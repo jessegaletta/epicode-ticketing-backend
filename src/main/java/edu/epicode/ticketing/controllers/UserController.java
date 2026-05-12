@@ -61,8 +61,13 @@ public class UserController {
 
     @PatchMapping("/{userId}/avatar")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
-    public void uploadImage(@PathVariable UUID userId, @RequestParam("avatar") MultipartFile file) throws IOException {
-        this.usersService.uploadProfilePicture(userId, file);
+    public UserProfileDTO uploadImage(@PathVariable UUID userId, @RequestParam("avatar") MultipartFile file) throws IOException {
+        return this.usersService.uploadProfilePicture(userId, file);
+    }
+
+    @PatchMapping("/me/avatar")
+    public UserProfileDTO uploadOwnImage(@AuthenticationPrincipal User currentAuthenticateUser, @RequestParam("avatar") MultipartFile file) throws IOException {
+        return this.usersService.uploadProfilePicture(currentAuthenticateUser.getId(), file);
     }
 
     @GetMapping("/me")

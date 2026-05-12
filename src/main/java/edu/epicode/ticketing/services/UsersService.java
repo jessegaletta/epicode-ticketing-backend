@@ -28,8 +28,6 @@ public class UsersService {
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
-    private UserSettingsService userSettingsService;
-    @Autowired
     private Cloudinary cloudinaryUploader;
     @Autowired
     private MailgunSender mailgunSender;
@@ -127,15 +125,30 @@ public class UsersService {
         this.usersRepository.delete(found);
     }
 
-    public void uploadProfilePicture(UUID userId, MultipartFile file) throws IOException {
+    public UserProfileDTO uploadProfilePicture(UUID userId, MultipartFile file) throws IOException {
+        // Validate size (max 10MB for Cloudinary standard free tier)
+        long maxSize = 10 * 1024 * 1024;
+        if (file.getSize() > maxSize) {
+            throw new ValidationException("File size exceeds 10MB limit.");
+        }
+
+        // Validate format (Cloudinary supports standard image formats)
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new ValidationException("Invalid file format. Only images are allowed.");
+        }
+
         // Check if user exist
-        // Validate (check size, check format)
+        User user = this.findById(userId);
+        
         try{
             Map<?, ?> response = this.cloudinaryUploader.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "eiot/avatars"));
             String imageURL = response.get("secure_url").toString();
-            System.out.println(imageURL); // TODO: Store this url inside that user's profile
+            user.setAvatarURL(imageURL);
+            this.usersRepository.save(user);
+            return getProfile(user);
         } catch (IOException e) {
-            throw new RuntimeException(""); // TODO: handle exception
+            throw new RuntimeException("Error uploading image");
         }
     }
 

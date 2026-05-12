@@ -1,6 +1,5 @@
 package edu.epicode.ticketing.controllers;
 
-import edu.epicode.ticketing.exceptions.ValidationException;
 import edu.epicode.ticketing.payloads.users.LoginDTO;
 import edu.epicode.ticketing.payloads.users.LoginRespDTO;
 import edu.epicode.ticketing.payloads.users.NewUserDTO;
