@@ -105,6 +105,10 @@ public class UsersService {
         user.setLastName(body.lastName());
         user.setEmail(body.email());
         
+        if (body.password() != null && !body.password().isEmpty()) {
+            user.setPassword(bcrypt.encode(body.password()));
+        }
+
         UserSettings settings = user.getUserSettings();
         if (settings == null) {
             settings = new UserSettings(user);

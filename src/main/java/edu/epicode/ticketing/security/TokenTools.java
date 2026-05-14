@@ -21,7 +21,7 @@ public class TokenTools {
     public String generateToken(User user){
         System.out.println();
         return Jwts.builder().issuedAt(new Date(System.currentTimeMillis())) // IAT Issued AT
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // Expiration Date (24 hours)
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // Expiration Date (15 minutes)
                 .subject(String.valueOf(user.getId()))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .compact();

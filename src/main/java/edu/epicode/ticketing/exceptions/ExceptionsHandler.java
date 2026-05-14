@@ -16,8 +16,12 @@ public class ExceptionsHandler {
 
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST) //400
-    public ErrorsWithListDTO handleValidationError(ValidationException ex){
-        return new ErrorsWithListDTO("Payload errors", LocalDateTime.now(), ex.getErrorsList());
+    public Object handleValidationError(ValidationException ex){
+        if (ex.getErrorsList() != null) {
+            return new ErrorsWithListDTO("Payload errors", LocalDateTime.now(), ex.getErrorsList());
+        } else {
+            return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
+        }
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

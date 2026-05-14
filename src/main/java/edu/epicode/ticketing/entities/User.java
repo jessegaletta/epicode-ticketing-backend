@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +34,10 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private UserSettings userSettings;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private java.time.LocalDateTime registrationDate;
 
     public User(){}
 
@@ -126,5 +131,9 @@ public class User implements UserDetails {
 
     public void setUserSettings(UserSettings userSettings) {
         this.userSettings = userSettings;
+    }
+
+    public java.time.LocalDateTime getRegistrationDate() {
+        return registrationDate;
     }
 }
