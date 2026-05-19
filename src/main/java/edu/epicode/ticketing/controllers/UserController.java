@@ -4,6 +4,7 @@ import edu.epicode.ticketing.entities.User;
 import edu.epicode.ticketing.payloads.users.NewUserDTO;
 import edu.epicode.ticketing.payloads.users.UpdateUserProfileDTO;
 import edu.epicode.ticketing.payloads.users.UserProfileDTO;
+import edu.epicode.ticketing.payloads.users.UserProfileForAdminDTO;
 import edu.epicode.ticketing.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import edu.epicode.ticketing.payloads.users.UserListDTO;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,21 +36,39 @@ public class UserController {
 
     //1.
     @GetMapping
-    public List<User> getUsers(){
-        return this.usersService.findAll();
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
+    public Page<UserListDTO> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir,
+            @RequestParam(required = false) String search,
+            @AuthenticationPrincipal User currentUser
+    ){
+        return this.usersService.findAll(page, size, sortBy, sortDir, search, currentUser);
+    }
+
+    //2.
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
+    public UserProfileDTO createUser(@Validated @RequestBody UserProfileForAdminDTO body){
+        return this.usersService.createUserAsAdmin(body);
     }
 
     //3.
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable UUID userId){
-        return this.usersService.findById(userId);
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
+    public UserProfileDTO getUserById(@PathVariable UUID userId){
+        User user = this.usersService.findById(userId);
+        return this.usersService.getProfile(user);
     }
 
     //4.
     @PutMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
-    public User updateUserById(@PathVariable UUID userId, @Validated @RequestBody NewUserDTO body){
-        return this.usersService.findByIdAndUpdate(userId, body);
+    public UserProfileDTO updateUserById(@PathVariable UUID userId, @Validated @RequestBody UserProfileForAdminDTO body){
+        return this.usersService.updateUserAsAdmin(userId, body);
     }
 
     //5.

@@ -1,19 +1,19 @@
 package edu.epicode.ticketing.payloads.users;
 
+import edu.epicode.ticketing.entities.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 
 /**
- * REQUEST DTO: Used by the client to update their own personal profile.
- * Endpoint: PUT /users/me
+ * REQUEST DTO: Used by ADMIN or SUPERADMIN to create or update other users.
+ * Endpoints: POST /users, PUT /users/{userId}
  * 
- * Contains validation rules for incoming data. It does not include the user ID
- * or avatar URL, as those are handled separately or auto-generated.
- * It does not include Role, as standard users cannot elevate their own privileges.
+ * Similar to UpdateUserProfileDTO, but includes the Role field so administrators
+ * can assign or modify a user's privileges.
  */
-public record UpdateUserProfileDTO(
+public record UserProfileForAdminDTO(
         @NotBlank(message = "First name is required!")
         @Size(min = 2, max = 30, message = "First name between 2 and 50 characters")
         String firstName,
@@ -32,6 +32,8 @@ public record UpdateUserProfileDTO(
         boolean darkMode,
         String timezone,
         String dateFormat,
-        String timeFormat
+        String timeFormat,
+        
+        Role role
 ) {
 }

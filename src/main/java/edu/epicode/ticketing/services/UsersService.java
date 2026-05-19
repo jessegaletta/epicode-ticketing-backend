@@ -10,9 +10,16 @@ import edu.epicode.ticketing.payloads.users.NewUserDTO;
 import edu.epicode.ticketing.payloads.users.NewUserResponseDTO;
 import edu.epicode.ticketing.payloads.users.UpdateUserProfileDTO;
 import edu.epicode.ticketing.payloads.users.UserProfileDTO;
+import edu.epicode.ticketing.payloads.users.UserProfileForAdminDTO;
+import edu.epicode.ticketing.payloads.users.UserListDTO;
+import edu.epicode.ticketing.entities.Role;
 import edu.epicode.ticketing.repositories.UsersRepository;
 import edu.epicode.ticketing.tools.MailgunSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +43,28 @@ public class UsersService {
 
     public List<User> findAll(){
         return this.usersRepository.findAll();
+    }
+
+    public Page<UserListDTO> findAll(int page, int size, String sortBy, String sortDir, String search, User authenticatedUser) {
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(sortDir), sortBy);
+
+        Page<User> usersPage;
+        if (search != null && !search.trim().isEmpty()) {
+            usersPage = this.usersRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(search, search, search, pageable);
+        } else {
+            usersPage = this.usersRepository.findAll(pageable);
+        }
+
+        boolean isAdmin = authenticatedUser.getRole() == Role.ADMIN || authenticatedUser.getRole() == Role.SUPERADMIN;
+
+        return usersPage.map(user -> new UserListDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getRole(),
+                isAdmin || user.getId().equals(authenticatedUser.getId())
+        ));
     }
 
     public NewUserResponseDTO saveUser(NewUserDTO body) {
@@ -69,16 +98,64 @@ public class UsersService {
         }
     }
 
-    public User findByIdAndUpdate(UUID userId, NewUserDTO body){
+    public UserProfileDTO createUserAsAdmin(UserProfileForAdminDTO body) {
+        if (body.firstName().length() < 2) throw new ValidationException("Name cannot be shorter than 2 characters");
+
+        if(usersRepository.existsByEmail(body.email())){
+            throw new ValidationException("Email already in use");
+        }
+
+        if (body.password() == null || body.password().trim().isEmpty()) {
+            throw new ValidationException("Password is required for new users");
+        }
+
+        User newUser = new User(body.firstName(), body.lastName(), body.email(), bcrypt.encode(body.password()));
+        
+        if (body.role() != null) {
+            newUser.setRole(body.role());
+        }
+
+        UserSettings settings = new UserSettings(newUser);
+        settings.setDarkMode(body.darkMode());
+        settings.setTimezone(body.timezone() != null ? body.timezone() : "Europe/Belgrade");
+        settings.setDateFormat(body.dateFormat() != null ? body.dateFormat() : "DD/MM/YYYY");
+        settings.setTimeFormat(body.timeFormat() != null ? body.timeFormat() : "24h");
+        
+        newUser.setUserSettings(settings);
+        mailgunSender.sendRegistrationEmail(newUser);
+
+        User savedUser = this.usersRepository.save(newUser);
+        return getProfile(savedUser);
+    }
+
+    public UserProfileDTO updateUserAsAdmin(UUID userId, UserProfileForAdminDTO body){
         User found = this.findById(userId);
-        // TODO: Validate data
+        
         found.setFirstName(body.firstName());
         found.setLastName(body.lastName());
         found.setEmail(body.email());
-        found.setPassword(bcrypt.encode(body.password()));
-        found.setAvatarURL("https://ui-avatars.com/api/?name=" + body.firstName() + "+" + body.lastName());
+        
+        if (body.password() != null && !body.password().isEmpty()) {
+            found.setPassword(bcrypt.encode(body.password()));
+        }
 
-        return this.usersRepository.save(found);
+        if (body.role() != null) {
+            found.setRole(body.role());
+        }
+
+        UserSettings settings = found.getUserSettings();
+        if (settings == null) {
+            settings = new UserSettings(found);
+            found.setUserSettings(settings);
+        }
+        
+        settings.setDarkMode(body.darkMode());
+        settings.setTimezone(body.timezone());
+        settings.setDateFormat(body.dateFormat());
+        settings.setTimeFormat(body.timeFormat());
+
+        User savedUser = this.usersRepository.save(found);
+        return getProfile(savedUser);
     }
 
     public UserProfileDTO getProfile(User user) {

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 
@@ -37,9 +38,9 @@ public class ExceptionsHandler {
         return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
     }
 
-    @ExceptionHandler(UnauthorizedAccess.class)
+    @ExceptionHandler({UnauthorizedAccess.class, AccessDeniedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN) //403
-    public ErrorsDTO handleForbidden(UnauthorizedAccess ex){
+    public ErrorsDTO handleForbidden(RuntimeException ex){
         return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
     }
 
