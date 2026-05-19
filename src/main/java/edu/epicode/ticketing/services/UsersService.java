@@ -234,6 +234,6 @@ public class UsersService {
     }
 
     public User findByEmail(String email){
-         return usersRepository.findByEmail(email).orElseThrow(()-> new NotFoundException("Users with email" + email + " not found" ));
+         return usersRepository.findByEmail(email).orElseThrow(()-> new NotFoundException("Users with email " + email + " not found" ));
     }
 }
