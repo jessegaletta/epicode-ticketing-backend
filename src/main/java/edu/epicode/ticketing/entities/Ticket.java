@@ -3,7 +3,7 @@ package edu.epicode.ticketing.entities;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "tickets")
@@ -21,7 +21,7 @@ public class Ticket {
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -61,7 +61,7 @@ public class Ticket {
         this.description = description;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 

@@ -1,7 +1,6 @@
 package edu.epicode.ticketing.controllers;
 
 import edu.epicode.ticketing.entities.User;
-import edu.epicode.ticketing.payloads.users.NewUserDTO;
 import edu.epicode.ticketing.payloads.users.UpdateUserProfileDTO;
 import edu.epicode.ticketing.payloads.users.UserProfileDTO;
 import edu.epicode.ticketing.payloads.users.UserProfileForAdminDTO;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Page;
 import edu.epicode.ticketing.payloads.users.UserListDTO;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 /*
