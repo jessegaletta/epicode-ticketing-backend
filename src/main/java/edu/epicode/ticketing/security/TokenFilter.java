@@ -37,8 +37,10 @@ public class TokenFilter extends OncePerRequestFilter {
             //2. If authorization Header is there, check if it is in the right format:
             // "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NzcxMDQ1MTQsImV4cCI6MTc3NzE5MDkxNCwic3ViIjoiODVhNTQwMzctZTc2OC00ODY1LTgyNGQtODNjOGJkOGU0OWYwIn0.Q2JNCYgQkPlwS2aXr-_6yZlozSd8ilFOuS6f7XE1Lks""
             String authorizationHeader = request.getHeader("Authorization");
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer "))
-                throw new UnauthorizedException("Missing token or header value not in the right format");
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             // 3. if header is there and value is in the right format, let's extract the token from it
             String accessToken = authorizationHeader.replace("Bearer ", "");

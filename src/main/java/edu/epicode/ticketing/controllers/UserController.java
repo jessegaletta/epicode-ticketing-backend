@@ -87,22 +87,26 @@ public class UserController {
     }
 
     @PatchMapping("/me/avatar")
+    @PreAuthorize("isAuthenticated()")
     public UserProfileDTO uploadOwnImage(@AuthenticationPrincipal User currentAuthenticateUser, @RequestParam("avatar") MultipartFile file) throws IOException {
         return this.usersService.uploadProfilePicture(currentAuthenticateUser.getId(), file);
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public UserProfileDTO getOwnProfile(@AuthenticationPrincipal User currentAuthenticateUser){
         return this.usersService.getProfile(currentAuthenticateUser);
     }
 
     @PutMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public UserProfileDTO updateOwnProfile(@AuthenticationPrincipal User currentAuthenticateUser, @Validated @RequestBody UpdateUserProfileDTO body){
         return this.usersService.updateProfile(currentAuthenticateUser, body);
     }
 
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("isAuthenticated()")
     public void deleteOwnProfile(@AuthenticationPrincipal User currentAuthenticateUser){
         this.usersService.findByIdAndDelete(currentAuthenticateUser.getId());
     }
