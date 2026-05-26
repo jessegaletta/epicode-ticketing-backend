@@ -31,6 +31,9 @@ public class Ticket {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(nullable = false)
+    private boolean userDeleted = false;
+
     public Ticket() {
     }
 
@@ -79,6 +82,14 @@ public class Ticket {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isUserDeleted() {
+        return userDeleted;
+    }
+
+    public void setUserDeleted(boolean userDeleted) {
+        this.userDeleted = userDeleted;
     }
 
     @Override

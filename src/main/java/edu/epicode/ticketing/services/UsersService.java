@@ -14,8 +14,10 @@ import edu.epicode.ticketing.payloads.users.UserProfileForAdminDTO;
 import edu.epicode.ticketing.payloads.users.UserListDTO;
 import edu.epicode.ticketing.entities.Role;
 import edu.epicode.ticketing.repositories.UsersRepository;
+import edu.epicode.ticketing.repositories.TicketsRepository;
 import edu.epicode.ticketing.tools.MailgunSender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +36,8 @@ import java.util.UUID;
 public class UsersService {
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private TicketsRepository ticketsRepository;
     @Autowired
     private Cloudinary cloudinaryUploader;
     @Autowired
@@ -201,8 +205,10 @@ public class UsersService {
         return getProfile(savedUser);
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void findByIdAndDelete(UUID userId){
         User found = this.findById(userId);
+        this.ticketsRepository.detachUserFromTickets(found);
         this.usersRepository.delete(found);
     }
 
