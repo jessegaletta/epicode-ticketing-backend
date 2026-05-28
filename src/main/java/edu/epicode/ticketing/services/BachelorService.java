@@ -18,9 +18,13 @@ public class BachelorService {
     @Autowired
     private BachelorRepository bachelorRepository;
 
-    public Page<Bachelor> getBachelors(int page, int size, String sortBy) {
+    public Page<Bachelor> getBachelors(int page, int size, String sortBy, String sortDir, String search) {
         if (size > 100) size = 100;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        if (search != null && !search.trim().isEmpty()) {
+            return bachelorRepository.findByDescriptionContainingIgnoreCase(search, pageable);
+        }
         return bachelorRepository.findAll(pageable);
     }
 

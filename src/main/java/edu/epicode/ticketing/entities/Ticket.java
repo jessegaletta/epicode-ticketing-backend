@@ -1,5 +1,6 @@
 package edu.epicode.ticketing.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -102,5 +103,13 @@ public class Ticket {
                 ", status=" + status +
                 ", user=" + (user != null ? user.getId() : "null") +
                 '}';
+    }
+
+    @JsonProperty("authorBachelorDescription")
+    public String getAuthorBachelorDescription() {
+        if (this.user != null && this.user.getBachelor() != null) {
+            return this.user.getBachelor().getDescription();
+        }
+        return "";
     }
 }

@@ -33,10 +33,18 @@ public class TicketsService {
         return ticketsRepository.save(newTicket);
     }
 
-    public Page<Ticket> findAll(int page, int size, String sortBy, String sortDir) {
+    public Page<Ticket> findAll(int page, int size, String sortBy, String sortDir, String search) {
         if (size > 100) size = 100;
+
+        if ("authorEmail".equals(sortBy)) {
+            sortBy = "user.email";
+        }
+
         Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
+        if (search != null && !search.trim().isEmpty()) {
+            return ticketsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, pageable);
+        }
         return ticketsRepository.findAll(pageable);
     }
 

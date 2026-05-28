@@ -15,4 +15,6 @@ public interface TicketsRepository extends JpaRepository<Ticket, Long> {
     @Modifying
     @Query("UPDATE Ticket t SET t.user = null, t.userDeleted = true WHERE t.user = :user")
     void detachUserFromTickets(@Param("user") User user);
+
+    org.springframework.data.domain.Page<Ticket> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description, org.springframework.data.domain.Pageable pageable);
 }

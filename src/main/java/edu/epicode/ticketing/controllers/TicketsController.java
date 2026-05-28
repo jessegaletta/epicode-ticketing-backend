@@ -34,9 +34,10 @@ public class TicketsController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "DESC") String sortDir
+            @RequestParam(defaultValue = "DESC") String sortDir,
+            @RequestParam(required = false) String search
     ) {
-        return ticketsService.findAll(page, size, sortBy, sortDir);
+        return ticketsService.findAll(page, size, sortBy, sortDir, search);
     }
 
     @GetMapping("/{id}")

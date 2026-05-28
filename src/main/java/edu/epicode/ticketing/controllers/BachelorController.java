@@ -22,8 +22,10 @@ public class BachelorController {
     @GetMapping
     public Page<Bachelor> getAllBachelors(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size,
-                                          @RequestParam(defaultValue = "id") String sortBy) {
-        return bachelorService.getBachelors(page, size, sortBy);
+                                          @RequestParam(defaultValue = "id") String sortBy,
+                                          @RequestParam(defaultValue = "ASC") String sortDir,
+                                          @RequestParam(required = false) String search) {
+        return bachelorService.getBachelors(page, size, sortBy, sortDir, search);
     }
 
     @GetMapping("/{id}")
