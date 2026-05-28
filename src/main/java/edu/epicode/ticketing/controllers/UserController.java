@@ -34,7 +34,7 @@ public class UserController {
 
     //1.
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public Page<UserListDTO> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -49,14 +49,14 @@ public class UserController {
     //2.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public UserProfileDTO createUser(@Validated @RequestBody UserProfileForAdminDTO body){
         return this.usersService.createUserAsAdmin(body);
     }
 
     //3.
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public UserProfileDTO getUserById(@PathVariable UUID userId){
         User user = this.usersService.findById(userId);
         return this.usersService.getProfile(user);
@@ -64,7 +64,7 @@ public class UserController {
 
     //4.
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public UserProfileDTO updateUserById(@PathVariable UUID userId, @Validated @RequestBody UserProfileForAdminDTO body){
         return this.usersService.updateUserAsAdmin(userId, body);
     }
@@ -72,14 +72,14 @@ public class UserController {
     //5.
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public void deleteUserById(@PathVariable UUID userId){
         this.usersService.findByIdAndDelete(userId);
     }
 
 
     @PatchMapping("/{userId}/avatar")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public UserProfileDTO uploadImage(@PathVariable UUID userId, @RequestParam("avatar") MultipartFile file) throws IOException {
         return this.usersService.uploadProfilePicture(userId, file);
     }

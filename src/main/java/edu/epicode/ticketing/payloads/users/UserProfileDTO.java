@@ -23,6 +23,9 @@ public record UserProfileDTO(
         boolean darkMode,
         String timezone,
         String dateFormat,
-        String timeFormat
+        String timeFormat,
+
+        Long bachelorId,
+        String bachelorDescription
 ) {
 }

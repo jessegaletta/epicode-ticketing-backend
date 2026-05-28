@@ -35,6 +35,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private UserSettings userSettings;
 
+    @ManyToOne
+    @JoinColumn(name = "bachelor_id")
+    private Bachelor bachelor;
+
     @CreationTimestamp
     @Column(updatable = false)
     private java.time.LocalDateTime registrationDate;
@@ -131,6 +135,14 @@ public class User implements UserDetails {
 
     public void setUserSettings(UserSettings userSettings) {
         this.userSettings = userSettings;
+    }
+
+    public Bachelor getBachelor() {
+        return bachelor;
+    }
+
+    public void setBachelor(Bachelor bachelor) {
+        this.bachelor = bachelor;
     }
 
     public java.time.LocalDateTime getRegistrationDate() {

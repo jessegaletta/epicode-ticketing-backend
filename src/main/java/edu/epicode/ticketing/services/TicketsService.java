@@ -69,7 +69,7 @@ public class TicketsService {
             throw new UnauthorizedException("You must be logged in to modify this ticket.");
         }
         
-        boolean isAdmin = currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.SUPERADMIN;
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
         
         if (ticket.getUser() == null) {
             // Anonymous ticket: only admins can edit

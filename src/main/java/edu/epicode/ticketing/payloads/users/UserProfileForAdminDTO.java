@@ -5,9 +5,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 
 /**
- * REQUEST DTO: Used by ADMIN or SUPERADMIN to create or update other users.
+ * REQUEST DTO: Used by ADMIN to create or update other users.
  * Endpoints: POST /users, PUT /users/{userId}
  * 
  * Similar to UpdateUserProfileDTO, but includes the Role field so administrators
@@ -34,6 +35,9 @@ public record UserProfileForAdminDTO(
         String dateFormat,
         String timeFormat,
         
+        @NotNull(message = "Bachelor is required!")
+        Long bachelorId,
+
         Role role
 ) {
 }
