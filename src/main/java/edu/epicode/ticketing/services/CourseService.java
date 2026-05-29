@@ -1,0 +1,90 @@
+package edu.epicode.ticketing.services;
+
+import edu.epicode.ticketing.entities.Bachelor;
+import edu.epicode.ticketing.entities.Course;
+import edu.epicode.ticketing.exceptions.NotFoundException;
+import edu.epicode.ticketing.payloads.courses.CourseDTO;
+import edu.epicode.ticketing.repositories.BachelorRepository;
+import edu.epicode.ticketing.repositories.CourseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Service
+public class CourseService {
+
+    @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
+    private BachelorRepository bachelorRepository;
+
+    public Page<Course> getCourses(int page, int size, String sortBy, String sortDir, String search) {
+        if (size > 100) size = 100;
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        if (search != null && !search.trim().isEmpty()) {
+            return courseRepository.findByDescriptionContainingIgnoreCase(search, pageable);
+        }
+        return courseRepository.findAll(pageable);
+    }
+
+    public Course save(CourseDTO body) {
+        Course course = new Course(body.description());
+        if (body.bachelorIds() != null && !body.bachelorIds().isEmpty()) {
+            List<Bachelor> bachelorsList = bachelorRepository.findAllById(body.bachelorIds());
+            Set<Bachelor> bachelors = new HashSet<>(bachelorsList);
+            course.setBachelors(bachelors);
+            
+            // Manage bidirectional relation
+            for (Bachelor b : bachelors) {
+                b.getCourses().add(course);
+            }
+        }
+        return courseRepository.save(course);
+    }
+
+    public Course findById(Long id) {
+        return courseRepository.findById(id).orElseThrow(() -> new NotFoundException("Course with id " + id + " not found"));
+    }
+
+    public Course update(Long id, CourseDTO body) {
+        Course found = this.findById(id);
+        found.setDescription(body.description());
+        
+        if (body.bachelorIds() != null) {
+            List<Bachelor> bachelorsList = bachelorRepository.findAllById(body.bachelorIds());
+            Set<Bachelor> newBachelors = new HashSet<>(bachelorsList);
+            
+            // Remove course from old bachelors
+            for (Bachelor oldB : found.getBachelors()) {
+                oldB.getCourses().remove(found);
+            }
+            
+            // Add course to new bachelors
+            for (Bachelor newB : newBachelors) {
+                newB.getCourses().add(found);
+            }
+            
+            found.setBachelors(newBachelors);
+        }
+        
+        return courseRepository.save(found);
+    }
+
+    public void delete(Long id) {
+        Course found = this.findById(id);
+        // Remove course from all bachelors before deleting
+        for (Bachelor b : found.getBachelors()) {
+            b.getCourses().remove(found);
+        }
+        courseRepository.delete(found);
+    }
+}

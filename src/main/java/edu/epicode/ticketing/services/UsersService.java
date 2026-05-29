@@ -121,11 +121,19 @@ public class UsersService {
         }
 
         User newUser = new User(body.firstName(), body.lastName(), body.email(), bcrypt.encode(body.password()));
-        newUser.setBachelor(bachelorService.findById(body.bachelorId()));
-
         if (body.role() != null) {
             newUser.setRole(body.role());
         }
+
+        if (newUser.getRole() == Role.STUDENT && body.bachelorId() == null) {
+            throw new ValidationException("Bachelor is required for STUDENT");
+        }
+
+        if (body.bachelorId() != null) {
+            newUser.setBachelor(bachelorService.findById(body.bachelorId()));
+        }
+
+
 
         UserSettings settings = new UserSettings(newUser);
         settings.setDarkMode(body.darkMode());
@@ -146,14 +154,22 @@ public class UsersService {
         found.setFirstName(body.firstName());
         found.setLastName(body.lastName());
         found.setEmail(body.email());
-        found.setBachelor(bachelorService.findById(body.bachelorId()));
+        if (body.role() != null) {
+            found.setRole(body.role());
+        }
+
+        if (found.getRole() == Role.STUDENT && body.bachelorId() == null) {
+            throw new ValidationException("Bachelor is required for STUDENT");
+        }
+
+        if (body.bachelorId() != null) {
+            found.setBachelor(bachelorService.findById(body.bachelorId()));
+        } else {
+            found.setBachelor(null);
+        }
 
         if (body.password() != null && !body.password().isEmpty()) {
             found.setPassword(bcrypt.encode(body.password()));
-        }
-
-        if (body.role() != null) {
-            found.setRole(body.role());
         }
 
         UserSettings settings = found.getUserSettings();
@@ -197,7 +213,15 @@ public class UsersService {
         user.setFirstName(body.firstName());
         user.setLastName(body.lastName());
         user.setEmail(body.email());
-        user.setBachelor(bachelorService.findById(body.bachelorId()));
+        if (user.getRole() == Role.STUDENT && body.bachelorId() == null) {
+            throw new ValidationException("Bachelor is required for STUDENT");
+        }
+
+        if (body.bachelorId() != null) {
+            user.setBachelor(bachelorService.findById(body.bachelorId()));
+        } else {
+            user.setBachelor(null);
+        }
 
         if (body.password() != null && !body.password().isEmpty()) {
             user.setPassword(bcrypt.encode(body.password()));

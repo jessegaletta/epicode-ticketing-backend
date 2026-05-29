@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.NotNull;
 
 /**
  * REQUEST DTO: Used by the client to update their own personal profile.
@@ -35,7 +34,6 @@ public record UpdateUserProfileDTO(
         String dateFormat,
         String timeFormat,
 
-        @NotNull(message = "Bachelor is required!")
         Long bachelorId
 ) {
 }

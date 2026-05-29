@@ -51,7 +51,7 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.avatarURL = "https://ui-avatars.com/api/?name=" + this.firstName + "+" + this.lastName;
-        this.role = Role.USER;
+        this.role = Role.STUDENT;
     }
 
     public UUID getId() {

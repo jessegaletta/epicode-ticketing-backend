@@ -48,6 +48,9 @@ public class BachelorService {
         if (found.getUsers() != null && !found.getUsers().isEmpty()) {
             throw new ValidationException("Cannot delete this bachelor because there are users associated with it.");
         }
+        if (found.getCourses() != null && !found.getCourses().isEmpty()) {
+            throw new ValidationException("Cannot delete this bachelor because there are courses associated with it.");
+        }
         bachelorRepository.delete(found);
     }
 }

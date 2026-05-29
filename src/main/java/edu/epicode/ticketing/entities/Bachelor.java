@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
-
+import java.util.Set;
+import java.util.HashSet;
 @Entity
 @Table(name = "bachelors")
 public class Bachelor {
@@ -18,6 +19,10 @@ public class Bachelor {
     @OneToMany(mappedBy = "bachelor")
     @JsonIgnore
     private List<User> users;
+
+    @ManyToMany(mappedBy = "bachelors")
+    @JsonIgnore
+    private Set<Course> courses = new HashSet<>();
 
     public Bachelor() {
     }
@@ -44,6 +49,14 @@ public class Bachelor {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public Set<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(Set<Course> courses) {
+        this.courses = courses;
     }
 
     @Override
