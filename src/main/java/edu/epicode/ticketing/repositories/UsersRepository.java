@@ -1,5 +1,6 @@
 package edu.epicode.ticketing.repositories;
 
+import edu.epicode.ticketing.entities.Role;
 import edu.epicode.ticketing.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ public interface UsersRepository extends JpaRepository<User, UUID> {
 
     List<User> findByFirstNameAndLastName(String firstName, String lastName);
 
-    Long countByRole(String role);
+    Long countByRole(Role role);
 
     // =============== NATIVE QUERIES ===============
     @Query(value = "SELECT * users WHERE name = :name", nativeQuery = true)

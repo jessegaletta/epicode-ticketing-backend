@@ -52,7 +52,8 @@ public class UsersService {
 
     public Page<UserListDTO> findAll(int page, int size, String sortBy, String sortDir, String search,
             User authenticatedUser) {
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.fromString(sortDir), sortBy);
+        Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy).ignoreCase();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(order));
 
         Page<User> usersPage;
         if (search != null && !search.trim().isEmpty()) {
@@ -245,6 +246,14 @@ public class UsersService {
     @org.springframework.transaction.annotation.Transactional
     public void findByIdAndDelete(UUID userId) {
         User found = this.findById(userId);
+
+        if (found.getRole() == Role.ADMIN) {
+            long adminCount = this.usersRepository.countByRole(Role.ADMIN);
+            if (adminCount <= 1) {
+                throw new ValidationException("Cannot delete the only admin in the system.");
+            }
+        }
+
         this.ticketsRepository.detachUserFromTickets(found);
         this.usersRepository.delete(found);
     }

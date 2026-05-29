@@ -28,7 +28,8 @@ public class CourseService {
 
     public Page<Course> getCourses(int page, int size, String sortBy, String sortDir, String search) {
         if (size > 100) size = 100;
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy).ignoreCase();
+        Sort sort = Sort.by(order);
         Pageable pageable = PageRequest.of(page, size, sort);
         if (search != null && !search.trim().isEmpty()) {
             return courseRepository.findByDescriptionContainingIgnoreCase(search, pageable);

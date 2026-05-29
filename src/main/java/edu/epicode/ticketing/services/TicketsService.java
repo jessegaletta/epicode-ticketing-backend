@@ -40,7 +40,8 @@ public class TicketsService {
             sortBy = "user.email";
         }
 
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy).ignoreCase();
+        Sort sort = Sort.by(order);
         Pageable pageable = PageRequest.of(page, size, sort);
         if (search != null && !search.trim().isEmpty()) {
             return ticketsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, pageable);
