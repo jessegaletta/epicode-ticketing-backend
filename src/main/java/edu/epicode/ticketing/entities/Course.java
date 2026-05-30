@@ -34,19 +34,6 @@ public class Course {
         return id;
     }
 
-    @JsonProperty("description")
-    public String getFormattedDescription() {
-        if (bachelors == null || bachelors.isEmpty()) {
-            return description;
-        }
-        String appended = bachelors.stream()
-                .map(Bachelor::getDescription)
-                .sorted()
-                .collect(Collectors.joining(" / "));
-        return description + " (" + appended + ")";
-    }
-
-    @JsonIgnore
     public String getDescription() {
         return description;
     }

@@ -15,6 +15,7 @@ import edu.epicode.ticketing.payloads.users.UserListDTO;
 import edu.epicode.ticketing.entities.Role;
 import edu.epicode.ticketing.repositories.UsersRepository;
 import edu.epicode.ticketing.repositories.TicketsRepository;
+import edu.epicode.ticketing.repositories.TicketActivityRepository;
 import edu.epicode.ticketing.tools.MailgunSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,8 @@ public class UsersService {
     @Autowired
     private TicketsRepository ticketsRepository;
     @Autowired
+    private TicketActivityRepository ticketActivityRepository;
+    @Autowired
     private Cloudinary cloudinaryUploader;
     @Autowired
     private MailgunSender mailgunSender;
@@ -52,7 +55,10 @@ public class UsersService {
 
     public Page<UserListDTO> findAll(int page, int size, String sortBy, String sortDir, String search,
             User authenticatedUser) {
-        Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy).ignoreCase();
+        Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy);
+        if (sortBy.equalsIgnoreCase("firstName") || sortBy.equalsIgnoreCase("lastName") || sortBy.equalsIgnoreCase("email")) {
+            order = order.ignoreCase();
+        }
         Pageable pageable = PageRequest.of(page, size, Sort.by(order));
 
         Page<User> usersPage;
@@ -255,6 +261,7 @@ public class UsersService {
         }
 
         this.ticketsRepository.detachUserFromTickets(found);
+        this.ticketActivityRepository.detachUserFromActivities(found);
         this.usersRepository.delete(found);
     }
 

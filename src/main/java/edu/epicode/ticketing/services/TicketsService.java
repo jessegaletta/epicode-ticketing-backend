@@ -36,10 +36,6 @@ public class TicketsService {
     public Page<Ticket> findAll(int page, int size, String sortBy, String sortDir, String search) {
         if (size > 100) size = 100;
 
-        if ("authorEmail".equals(sortBy)) {
-            sortBy = "user.email";
-        }
-
         Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy).ignoreCase();
         Sort sort = Sort.by(order);
         Pageable pageable = PageRequest.of(page, size, sort);

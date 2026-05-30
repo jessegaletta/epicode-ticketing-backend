@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "tickets")
@@ -34,6 +35,10 @@ public class Ticket {
 
     @Column(nullable = false)
     private boolean userDeleted = false;
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private List<TicketActivity> activities;
 
     public Ticket() {
     }
@@ -91,6 +96,14 @@ public class Ticket {
 
     public void setUserDeleted(boolean userDeleted) {
         this.userDeleted = userDeleted;
+    }
+
+    public List<TicketActivity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<TicketActivity> activities) {
+        this.activities = activities;
     }
 
     @Override
