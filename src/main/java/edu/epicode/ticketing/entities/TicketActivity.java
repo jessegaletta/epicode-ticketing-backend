@@ -34,6 +34,9 @@ public class TicketActivity {
     @Column(nullable = false)
     private boolean userDeleted = false;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isStatusChange = false;
+
     public TicketActivity() {
     }
 
@@ -81,6 +84,14 @@ public class TicketActivity {
 
     public void setUserDeleted(boolean userDeleted) {
         this.userDeleted = userDeleted;
+    }
+
+    public boolean isStatusChange() {
+        return isStatusChange;
+    }
+
+    public void setStatusChange(boolean statusChange) {
+        isStatusChange = statusChange;
     }
 
     @JsonProperty("authorBachelorDescription")

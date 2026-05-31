@@ -8,6 +8,9 @@ import edu.epicode.ticketing.exceptions.UnauthorizedException;
 import edu.epicode.ticketing.payloads.tickets.NewTicketDTO;
 import edu.epicode.ticketing.payloads.tickets.UpdateTicketDTO;
 import edu.epicode.ticketing.repositories.TicketsRepository;
+import edu.epicode.ticketing.entities.TicketActivity;
+import edu.epicode.ticketing.payloads.tickets.ChangeStatusDTO;
+import edu.epicode.ticketing.repositories.TicketActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +23,9 @@ public class TicketsService {
 
     @Autowired
     private TicketsRepository ticketsRepository;
+
+    @Autowired
+    private TicketActivityRepository activityRepository;
 
     public Ticket save(NewTicketDTO body, User currentUser) {
         User author = currentUser;
@@ -56,7 +62,6 @@ public class TicketsService {
 
         ticket.setTitle(body.title());
         ticket.setDescription(body.description());
-        ticket.setStatus(body.status());
 
         return ticketsRepository.save(ticket);
     }
@@ -67,6 +72,26 @@ public class TicketsService {
         checkEditPermission(ticket, currentUser);
 
         ticketsRepository.delete(ticket);
+    }
+
+    public Ticket changeStatus(Long id, ChangeStatusDTO body, User currentUser) {
+        if (currentUser == null || (currentUser.getRole() != Role.ADMIN && currentUser.getRole() != Role.FACULTY)) {
+            throw new UnauthorizedException("Only FACULTY and ADMIN can change ticket status.");
+        }
+
+        Ticket ticket = this.findById(id);
+        ticket.setStatus(body.status());
+
+        String text = "Status changed to " + body.status();
+        if (body.comment() != null && !body.comment().trim().isEmpty()) {
+            text += "\nComment: " + body.comment();
+        }
+
+        TicketActivity activity = new TicketActivity(text, currentUser, ticket);
+        activity.setStatusChange(true);
+        activityRepository.save(activity);
+
+        return ticketsRepository.save(ticket);
     }
 
     private void checkEditPermission(Ticket ticket, User currentUser) {

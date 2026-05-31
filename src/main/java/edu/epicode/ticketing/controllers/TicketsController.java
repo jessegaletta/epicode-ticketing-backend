@@ -4,6 +4,7 @@ import edu.epicode.ticketing.entities.Ticket;
 import edu.epicode.ticketing.entities.User;
 import edu.epicode.ticketing.payloads.tickets.NewTicketDTO;
 import edu.epicode.ticketing.payloads.tickets.UpdateTicketDTO;
+import edu.epicode.ticketing.payloads.tickets.ChangeStatusDTO;
 import edu.epicode.ticketing.services.TicketsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -63,5 +64,15 @@ public class TicketsController {
             @AuthenticationPrincipal User currentUser
     ) {
         ticketsService.findByIdAndDelete(id, currentUser);
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'FACULTY')")
+    public Ticket changeStatus(
+            @PathVariable Long id,
+            @Validated @RequestBody ChangeStatusDTO body,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        return ticketsService.changeStatus(id, body, currentUser);
     }
 }
