@@ -10,6 +10,13 @@ public record UpdateTicketDTO(
         String title,
 
         @NotBlank(message = "Description is mandatory")
-        String description
+        String description,
+
+        Long courseId,
+        String moduleName,
+        String lessonName,
+        String expectedBenefit,
+        String requestType,
+        Boolean isFaqCandidate
 ) {
 }

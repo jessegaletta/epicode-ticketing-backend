@@ -9,6 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "tickets")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 public class Ticket {
 
     @Id
@@ -27,7 +29,7 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TicketStatus status;
+    private TicketStatus status = TicketStatus.OPEN;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -39,6 +41,9 @@ public class Ticket {
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     @com.fasterxml.jackson.annotation.JsonIgnore
     private List<TicketActivity> activities;
+
+    @Column(name = "category", insertable = false, updatable = false)
+    private String category;
 
     public Ticket() {
     }
@@ -104,6 +109,10 @@ public class Ticket {
 
     public void setActivities(List<TicketActivity> activities) {
         this.activities = activities;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     @Override

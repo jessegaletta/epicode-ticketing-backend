@@ -2,6 +2,7 @@ package edu.epicode.ticketing.services;
 
 import edu.epicode.ticketing.entities.Bachelor;
 import edu.epicode.ticketing.entities.Course;
+import edu.epicode.ticketing.entities.User;
 import edu.epicode.ticketing.exceptions.NotFoundException;
 import edu.epicode.ticketing.payloads.courses.CourseDTO;
 import edu.epicode.ticketing.repositories.BachelorRepository;
@@ -26,15 +27,39 @@ public class CourseService {
     @Autowired
     private BachelorRepository bachelorRepository;
 
-    public Page<Course> getCourses(int page, int size, String sortBy, String sortDir, String search) {
+    public Page<Course> getCourses(int page, int size, String sortBy, String sortDir, String search, User currentUser) {
         if (size > 100) size = 100;
         Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy).ignoreCase();
         Sort sort = Sort.by(order);
         Pageable pageable = PageRequest.of(page, size, sort);
+
+        Long bachelorId = (currentUser != null && currentUser.getBachelor() != null) 
+            ? currentUser.getBachelor().getId() 
+            : null;
+
         if (search != null && !search.trim().isEmpty()) {
+            if (bachelorId != null) {
+                return courseRepository.findByDescriptionContainingIgnoreCaseAndBachelors_Id(search, bachelorId, pageable);
+            }
             return courseRepository.findByDescriptionContainingIgnoreCase(search, pageable);
         }
+
+        if (bachelorId != null) {
+            return courseRepository.findByBachelors_Id(bachelorId, pageable);
+        }
         return courseRepository.findAll(pageable);
+    }
+
+    public List<Course> getAllCoursesList(User currentUser) {
+        Long bachelorId = (currentUser != null && currentUser.getBachelor() != null) 
+            ? currentUser.getBachelor().getId() 
+            : null;
+
+        Sort sort = Sort.by(Sort.Order.asc("description").ignoreCase());
+        if (bachelorId != null) {
+            return courseRepository.findByBachelors_Id(bachelorId, sort);
+        }
+        return courseRepository.findAll(sort);
     }
 
     public Course save(CourseDTO body) {

@@ -8,7 +8,7 @@ import edu.epicode.ticketing.exceptions.UnauthorizedException;
 import edu.epicode.ticketing.payloads.tickets.NewTicketDTO;
 import edu.epicode.ticketing.payloads.tickets.UpdateTicketDTO;
 import edu.epicode.ticketing.repositories.TicketsRepository;
-import edu.epicode.ticketing.entities.TicketActivity;
+import edu.epicode.ticketing.entities.*;
 import edu.epicode.ticketing.payloads.tickets.ChangeStatusDTO;
 import edu.epicode.ticketing.repositories.TicketActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,9 @@ public class TicketsService {
     @Autowired
     private TicketActivityRepository activityRepository;
 
+    @Autowired
+    private CourseService courseService;
+
     public Ticket save(NewTicketDTO body, User currentUser) {
         User author = currentUser;
         
@@ -35,7 +38,45 @@ public class TicketsService {
             author = null;
         }
 
-        Ticket newTicket = new Ticket(body.title(), body.description(), author);
+        Ticket newTicket;
+        switch (body.category()) {
+            case "ERROR":
+                ErrorTicket errorTicket = new ErrorTicket();
+                errorTicket.setModuleName(body.moduleName());
+                errorTicket.setLessonName(body.lessonName());
+                if (body.courseId() != null) {
+                    errorTicket.setCourse(courseService.findById(body.courseId()));
+                }
+                newTicket = errorTicket;
+                break;
+            case "SUGGESTION":
+                SuggestionTicket suggestionTicket = new SuggestionTicket();
+                suggestionTicket.setExpectedBenefit(body.expectedBenefit());
+                newTicket = suggestionTicket;
+                break;
+            case "REQUEST":
+                RequestTicket requestTicket = new RequestTicket();
+                if (body.requestType() != null) {
+                    requestTicket.setRequestType(RequestType.valueOf(body.requestType()));
+                }
+                newTicket = requestTicket;
+                break;
+            case "DOUBT":
+                DoubtTicket doubtTicket = new DoubtTicket();
+                doubtTicket.setFaqCandidate(body.isFaqCandidate() != null ? body.isFaqCandidate() : false);
+                if (body.courseId() != null) {
+                    doubtTicket.setCourse(courseService.findById(body.courseId()));
+                }
+                newTicket = doubtTicket;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid category: " + body.category());
+        }
+
+        newTicket.setTitle(body.title());
+        newTicket.setDescription(body.description());
+        newTicket.setUser(author);
+
         return ticketsRepository.save(newTicket);
     }
 
@@ -62,6 +103,19 @@ public class TicketsService {
 
         ticket.setTitle(body.title());
         ticket.setDescription(body.description());
+
+        if (ticket instanceof ErrorTicket errorTicket) {
+            if (body.moduleName() != null) errorTicket.setModuleName(body.moduleName());
+            if (body.lessonName() != null) errorTicket.setLessonName(body.lessonName());
+            if (body.courseId() != null) errorTicket.setCourse(courseService.findById(body.courseId()));
+        } else if (ticket instanceof SuggestionTicket suggestionTicket) {
+            if (body.expectedBenefit() != null) suggestionTicket.setExpectedBenefit(body.expectedBenefit());
+        } else if (ticket instanceof RequestTicket requestTicket) {
+            if (body.requestType() != null) requestTicket.setRequestType(RequestType.valueOf(body.requestType()));
+        } else if (ticket instanceof DoubtTicket doubtTicket) {
+            if (body.isFaqCandidate() != null) doubtTicket.setFaqCandidate(body.isFaqCandidate());
+            if (body.courseId() != null) doubtTicket.setCourse(courseService.findById(body.courseId()));
+        }
 
         return ticketsRepository.save(ticket);
     }

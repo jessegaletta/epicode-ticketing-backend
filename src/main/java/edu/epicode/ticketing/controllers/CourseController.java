@@ -4,10 +4,12 @@ import edu.epicode.ticketing.entities.Course;
 import edu.epicode.ticketing.exceptions.ValidationException;
 import edu.epicode.ticketing.payloads.courses.CourseDTO;
 import edu.epicode.ticketing.services.CourseService;
+import edu.epicode.ticketing.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +26,14 @@ public class CourseController {
                                       @RequestParam(defaultValue = "10") int size,
                                       @RequestParam(defaultValue = "id") String sortBy,
                                       @RequestParam(defaultValue = "ASC") String sortDir,
-                                      @RequestParam(required = false) String search) {
-        return courseService.getCourses(page, size, sortBy, sortDir, search);
+                                      @RequestParam(required = false) String search,
+                                      @AuthenticationPrincipal User currentUser) {
+        return courseService.getCourses(page, size, sortBy, sortDir, search, currentUser);
+    }
+
+    @GetMapping("/all")
+    public java.util.List<Course> getAllCoursesList(@AuthenticationPrincipal User currentUser) {
+        return courseService.getAllCoursesList(currentUser);
     }
 
     @GetMapping("/{id}")

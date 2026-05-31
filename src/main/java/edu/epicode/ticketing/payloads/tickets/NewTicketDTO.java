@@ -11,6 +11,16 @@ public record NewTicketDTO(
         @NotBlank(message = "Description is mandatory")
         String description,
 
-        boolean isAnonymous
+        boolean isAnonymous,
+
+        @NotBlank(message = "Category is mandatory")
+        String category,
+
+        Long courseId,
+        String moduleName,
+        String lessonName,
+        String expectedBenefit,
+        String requestType,
+        Boolean isFaqCandidate
 ) {
 }
