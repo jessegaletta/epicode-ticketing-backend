@@ -1,7 +1,7 @@
 package edu.epicode.ticketing.entities;
 
 public enum TicketStatus {
-    OPEN,
+    UNASSIGNED,
     IN_PROGRESS,
     PENDING_INFO,
     RESOLVED,

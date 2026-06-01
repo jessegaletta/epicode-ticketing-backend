@@ -20,7 +20,10 @@ public class BachelorService {
 
     public Page<Bachelor> getBachelors(int page, int size, String sortBy, String sortDir, String search) {
         if (size > 100) size = 100;
-        Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy).ignoreCase();
+        Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy);
+        if ("description".equals(sortBy)) {
+            order = order.ignoreCase();
+        }
         Sort sort = Sort.by(order);
         Pageable pageable = PageRequest.of(page, size, sort);
         if (search != null && !search.trim().isEmpty()) {

@@ -80,16 +80,21 @@ public class TicketsService {
         return ticketsRepository.save(newTicket);
     }
 
-    public Page<Ticket> findAll(int page, int size, String sortBy, String sortDir, String search) {
+    public Page<Ticket> findAll(int page, int size, String sortBy, String sortDir, String search, String category, TicketStatus status, boolean onlyOpen) {
         if (size > 100) size = 100;
 
-        Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy).ignoreCase();
+        Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy);
+        if ("title".equals(sortBy) || "description".equals(sortBy)) {
+            order = order.ignoreCase();
+        }
+        
         Sort sort = Sort.by(order);
         Pageable pageable = PageRequest.of(page, size, sort);
-        if (search != null && !search.trim().isEmpty()) {
-            return ticketsRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(search, search, pageable);
-        }
-        return ticketsRepository.findAll(pageable);
+        
+        String finalSearch = (search != null && !search.trim().isEmpty()) ? search : null;
+        String finalCategory = (category != null && !category.trim().isEmpty()) ? category : null;
+        
+        return ticketsRepository.findByFilters(status, finalCategory, finalSearch, onlyOpen, pageable);
     }
 
     public Ticket findById(Long id) {

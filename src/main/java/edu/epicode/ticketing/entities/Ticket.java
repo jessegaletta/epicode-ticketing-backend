@@ -2,7 +2,6 @@ package edu.epicode.ticketing.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,13 +22,15 @@ public class Ticket {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @CreationTimestamp
     @Column(updatable = false)
     private Instant createdAt;
 
+    @Column(name = "last_update")
+    private Instant lastUpdate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TicketStatus status = TicketStatus.OPEN;
+    private TicketStatus status = TicketStatus.UNASSIGNED;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -51,7 +52,7 @@ public class Ticket {
     public Ticket(String title, String description, User user) {
         this.title = title;
         this.description = description;
-        this.status = TicketStatus.OPEN;
+        this.status = TicketStatus.UNASSIGNED;
         this.user = user;
     }
 
@@ -77,6 +78,27 @@ public class Ticket {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public Instant getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Instant lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = Instant.now();
+        }
+        this.lastUpdate = this.createdAt;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastUpdate = Instant.now();
     }
 
     public TicketStatus getStatus() {

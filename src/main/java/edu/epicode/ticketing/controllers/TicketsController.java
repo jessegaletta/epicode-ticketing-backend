@@ -36,9 +36,12 @@ public class TicketsController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDir,
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) edu.epicode.ticketing.entities.TicketStatus status,
+            @RequestParam(defaultValue = "false") boolean onlyOpen
     ) {
-        return ticketsService.findAll(page, size, sortBy, sortDir, search);
+        return ticketsService.findAll(page, size, sortBy, sortDir, search, category, status, onlyOpen);
     }
 
     @GetMapping("/{id}")

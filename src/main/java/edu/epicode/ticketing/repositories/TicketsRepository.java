@@ -17,4 +17,16 @@ public interface TicketsRepository extends JpaRepository<Ticket, Long> {
     void detachUserFromTickets(@Param("user") User user);
 
     org.springframework.data.domain.Page<Ticket> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description, org.springframework.data.domain.Pageable pageable);
+
+    @Query("SELECT t FROM Ticket t WHERE " +
+           "(:status IS NULL OR t.status = :status) AND " +
+           "(:category IS NULL OR t.category = :category) AND " +
+           "(:search IS NULL OR :search = '' OR LOWER(t.title) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(t.description) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
+           "(:onlyOpen = false OR (t.status != edu.epicode.ticketing.entities.TicketStatus.RESOLVED AND t.status != edu.epicode.ticketing.entities.TicketStatus.REJECTED))")
+    org.springframework.data.domain.Page<Ticket> findByFilters(
+            @Param("status") edu.epicode.ticketing.entities.TicketStatus status,
+            @Param("category") String category,
+            @Param("search") String search,
+            @Param("onlyOpen") boolean onlyOpen,
+            org.springframework.data.domain.Pageable pageable);
 }

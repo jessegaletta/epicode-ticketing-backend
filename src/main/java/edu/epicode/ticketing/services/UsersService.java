@@ -85,11 +85,11 @@ public class UsersService {
         if (body.firstName().length() < 2)
             throw new ValidationException("Name cannot be shorter than 2 characters");
 
-        if (usersRepository.existsByEmail(body.email())) {
+        if (usersRepository.existsByEmail(body.email().toLowerCase())) {
             throw new ValidationException("Email already in use");
         }
 
-        User newUser = new User(body.firstName(), body.lastName(), body.email(), bcrypt.encode(body.password()));
+        User newUser = new User(body.firstName(), body.lastName(), body.email().toLowerCase(), bcrypt.encode(body.password()));
         newUser.setBachelor(bachelorService.findById(body.bachelorId()));
 
         UserSettings settings = new UserSettings(newUser);
@@ -119,7 +119,7 @@ public class UsersService {
         if (body.firstName().length() < 2)
             throw new ValidationException("Name cannot be shorter than 2 characters");
 
-        if (usersRepository.existsByEmail(body.email())) {
+        if (usersRepository.existsByEmail(body.email().toLowerCase())) {
             throw new ValidationException("Email already in use");
         }
 
@@ -127,7 +127,7 @@ public class UsersService {
             throw new ValidationException("Password is required for new users");
         }
 
-        User newUser = new User(body.firstName(), body.lastName(), body.email(), bcrypt.encode(body.password()));
+        User newUser = new User(body.firstName(), body.lastName(), body.email().toLowerCase(), bcrypt.encode(body.password()));
         if (body.role() != null) {
             newUser.setRole(body.role());
         }
@@ -160,7 +160,7 @@ public class UsersService {
 
         found.setFirstName(body.firstName());
         found.setLastName(body.lastName());
-        found.setEmail(body.email());
+        found.setEmail(body.email().toLowerCase());
         if (body.role() != null) {
             found.setRole(body.role());
         }
@@ -219,7 +219,7 @@ public class UsersService {
     public UserProfileDTO updateProfile(User user, UpdateUserProfileDTO body) {
         user.setFirstName(body.firstName());
         user.setLastName(body.lastName());
-        user.setEmail(body.email());
+        user.setEmail(body.email().toLowerCase());
         if (user.getRole() == Role.STUDENT && body.bachelorId() == null) {
             throw new ValidationException("Bachelor is required for STUDENT");
         }
@@ -294,7 +294,7 @@ public class UsersService {
     }
 
     public User findByEmail(String email) {
-        return usersRepository.findByEmail(email)
+        return usersRepository.findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new NotFoundException("Users with email " + email + " not found"));
     }
 }
