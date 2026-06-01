@@ -6,6 +6,7 @@ import edu.epicode.ticketing.payloads.users.LoginDTO;
 import edu.epicode.ticketing.security.TokenTools;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import edu.epicode.ticketing.exceptions.NotFoundException;
 
 @Service
 public class AuthService {
@@ -21,17 +22,18 @@ public class AuthService {
     }
 
     public String checkCredentialsAndGenerateToken(LoginDTO body){
-        // 1. Check credentials
-
-        // 1.1. search for user by email
-        User found = this.usersService.findByEmail(body.email());
-        // 1.2 if user exists verify password
-        if(bcrypt.matches(body.password(), found.getPassword())){
-            return this.tokenTools.generateToken(found);
-        } else {
-            throw new UnauthorizedException("Wrong credentials!");
+        try {
+            // 1.1. search for user by email
+            User found = this.usersService.findByEmail(body.email());
+            // 1.2 if user exists verify password
+            if(bcrypt.matches(body.password(), found.getPassword())){
+                return this.tokenTools.generateToken(found);
+            }
+        } catch (NotFoundException e) {
+            // I do nothing here, I throw the exception below
         }
-        // 2. If everything is fine -> generate the access token
-        // 3.  If anything goes wrong -> 401
+        
+        // 3. If anything goes wrong -> 401
+        throw new UnauthorizedException("Wrong credentials!");
     }
 }

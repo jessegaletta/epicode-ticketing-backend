@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +42,7 @@ public class User implements UserDetails {
 
     @CreationTimestamp
     @Column(updatable = false)
-    private java.time.LocalDateTime registrationDate;
+    private LocalDateTime registrationDate;
 
     public User(){}
 
@@ -145,7 +146,7 @@ public class User implements UserDetails {
         this.bachelor = bachelor;
     }
 
-    public java.time.LocalDateTime getRegistrationDate() {
+    public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
 }

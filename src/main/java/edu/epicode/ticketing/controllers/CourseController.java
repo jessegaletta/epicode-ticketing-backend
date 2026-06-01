@@ -6,6 +6,7 @@ import edu.epicode.ticketing.payloads.courses.CourseDTO;
 import edu.epicode.ticketing.services.CourseService;
 import edu.epicode.ticketing.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/courses")
@@ -32,7 +35,7 @@ public class CourseController {
     }
 
     @GetMapping("/all")
-    public java.util.List<Course> getAllCoursesList(@AuthenticationPrincipal User currentUser) {
+    public List<Course> getAllCoursesList(@AuthenticationPrincipal User currentUser) {
         return courseService.getAllCoursesList(currentUser);
     }
 
@@ -46,7 +49,7 @@ public class CourseController {
     @ResponseStatus(HttpStatus.CREATED)
     public Course saveCourse(@RequestBody @Validated CourseDTO body, BindingResult validation) {
         if (validation.hasErrors()) {
-            throw new ValidationException(validation.getAllErrors().stream().map(org.springframework.context.support.DefaultMessageSourceResolvable::getDefaultMessage).toList());
+            throw new ValidationException(validation.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
         }
         return courseService.save(body);
     }
@@ -55,7 +58,7 @@ public class CourseController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'FACULTY')")
     public Course updateCourse(@PathVariable Long id, @RequestBody @Validated CourseDTO body, BindingResult validation) {
         if (validation.hasErrors()) {
-            throw new ValidationException(validation.getAllErrors().stream().map(org.springframework.context.support.DefaultMessageSourceResolvable::getDefaultMessage).toList());
+            throw new ValidationException(validation.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList());
         }
         return courseService.update(id, body);
     }

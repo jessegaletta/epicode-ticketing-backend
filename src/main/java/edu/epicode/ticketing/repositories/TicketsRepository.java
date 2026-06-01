@@ -1,13 +1,15 @@
 package edu.epicode.ticketing.repositories;
 
 import edu.epicode.ticketing.entities.Ticket;
+import edu.epicode.ticketing.entities.TicketStatus;
+import edu.epicode.ticketing.entities.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import edu.epicode.ticketing.entities.User;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TicketsRepository extends JpaRepository<Ticket, Long> {
@@ -16,17 +18,22 @@ public interface TicketsRepository extends JpaRepository<Ticket, Long> {
     @Query("UPDATE Ticket t SET t.user = null, t.userDeleted = true WHERE t.user = :user")
     void detachUserFromTickets(@Param("user") User user);
 
-    org.springframework.data.domain.Page<Ticket> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description, org.springframework.data.domain.Pageable pageable);
+    Page<Ticket> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description, Pageable pageable);
 
-    @Query("SELECT t FROM Ticket t WHERE " +
+    @Query(value = "SELECT t FROM Ticket t LEFT JOIN FETCH t.user WHERE " +
            "(:status IS NULL OR t.status = :status) AND " +
            "(:category IS NULL OR t.category = :category) AND " +
            "(:search IS NULL OR :search = '' OR LOWER(t.title) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(t.description) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
-           "(:onlyOpen = false OR (t.status != edu.epicode.ticketing.entities.TicketStatus.RESOLVED AND t.status != edu.epicode.ticketing.entities.TicketStatus.REJECTED))")
-    org.springframework.data.domain.Page<Ticket> findByFilters(
-            @Param("status") edu.epicode.ticketing.entities.TicketStatus status,
+           "(:onlyOpen = false OR (t.status != 'RESOLVED' AND t.status != 'REJECTED'))",
+           countQuery = "SELECT COUNT(t) FROM Ticket t WHERE " +
+           "(:status IS NULL OR t.status = :status) AND " +
+           "(:category IS NULL OR t.category = :category) AND " +
+           "(:search IS NULL OR :search = '' OR LOWER(t.title) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(t.description) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
+           "(:onlyOpen = false OR (t.status != 'RESOLVED' AND t.status != 'REJECTED'))")
+    Page<Ticket> findByFilters(
+            @Param("status") TicketStatus status,
             @Param("category") String category,
             @Param("search") String search,
             @Param("onlyOpen") boolean onlyOpen,
-            org.springframework.data.domain.Pageable pageable);
+            Pageable pageable);
 }
