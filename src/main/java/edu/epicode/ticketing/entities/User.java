@@ -44,6 +44,12 @@ public class User implements UserDetails {
     @Column(updatable = false)
     private LocalDateTime registrationDate;
 
+    @Column(nullable = false)
+    private int failedLoginAttempts = 0;
+
+    @Column(nullable = false)
+    private boolean accountLocked = false;
+
     public User(){}
 
     public User(String firstName, String lastName, String email, String password) {
@@ -148,5 +154,21 @@ public class User implements UserDetails {
 
     public LocalDateTime getRegistrationDate() {
         return registrationDate;
+    }
+
+    public int getFailedLoginAttempts() {
+        return failedLoginAttempts;
+    }
+
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts;
+    }
+
+    public boolean isAccountLocked() {
+        return accountLocked;
+    }
+
+    public void setAccountLocked(boolean accountLocked) {
+        this.accountLocked = accountLocked;
     }
 }

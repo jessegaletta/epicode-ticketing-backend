@@ -33,7 +33,7 @@ public class TicketsService {
     public Ticket save(NewTicketDTO body, User currentUser) {
         User author = currentUser;
         
-        // If the user chooses to be anonymous, we don't link the ticket to them.
+        // If the user chooses to be anonymous, I don't link the ticket to them.
         if (body.isAnonymous()) {
             author = null;
         }

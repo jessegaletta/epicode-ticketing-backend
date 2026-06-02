@@ -33,7 +33,7 @@ public class TokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         try {
-            // 1. Check if Authorization Header is present, if we don't -> 401
+            // 1. Check if Authorization Header is present, if I don't -> 401
             //2. If authorization Header is there, check if it is in the right format:
             // "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NzcxMDQ1MTQsImV4cCI6MTc3NzE5MDkxNCwic3ViIjoiODVhNTQwMzctZTc2OC00ODY1LTgyNGQtODNjOGJkOGU0OWYwIn0.Q2JNCYgQkPlwS2aXr-_6yZlozSd8ilFOuS6f7XE1Lks""
             String authorizationHeader = request.getHeader("Authorization");
@@ -42,7 +42,7 @@ public class TokenFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // 3. if header is there and value is in the right format, let's extract the token from it
+            // 3. if header is there and value is in the right format, I extract the token from it
             String accessToken = authorizationHeader.replace("Bearer ", "");
 
             // 4. Verify the token (not expired, not manipulated, not malformed)

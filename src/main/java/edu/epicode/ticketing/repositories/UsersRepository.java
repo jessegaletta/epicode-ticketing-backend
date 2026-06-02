@@ -34,4 +34,6 @@ public interface UsersRepository extends JpaRepository<User, UUID> {
     // =============== NATIVE QUERIES ===============
     @Query(value = "SELECT * users WHERE name = :name", nativeQuery = true)
     List<User> searchUsersByName(String name);
+
+    List<User> findByRole(Role role);
 }
