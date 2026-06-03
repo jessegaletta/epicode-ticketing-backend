@@ -14,12 +14,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketsRepository extends JpaRepository<Ticket, Long> {
 
+    // @Modifying is required for write queries (UPDATE/DELETE).
+    // Without it, Spring Data throws an exception expecting a SELECT.
     @Modifying
     @Query("UPDATE Ticket t SET t.user = null, t.userDeleted = true WHERE t.user = :user")
     void detachUserFromTickets(@Param("user") User user);
 
     Page<Ticket> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description, Pageable pageable);
 
+    // Each filter parameter is optional: passing null skips that condition.
+    // A separate countQuery is required because LEFT JOIN FETCH is not allowed in count queries.
     @Query(value = "SELECT t FROM Ticket t LEFT JOIN FETCH t.user WHERE " +
            "(:status IS NULL OR t.status = :status) AND " +
            "(:category IS NULL OR t.category = :category) AND " +

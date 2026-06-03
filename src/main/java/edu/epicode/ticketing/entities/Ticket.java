@@ -1,5 +1,6 @@
 package edu.epicode.ticketing.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -8,7 +9,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "tickets")
+// JOINED inheritance creates a separate DB table for the base class and each subclass.
+// A JOIN is performed at query time to reconstruct the full object.
 @Inheritance(strategy = InheritanceType.JOINED)
+// The value in this column identifies which subclass each row belongs to (e.g. "ERROR", "DOUBT").
 @DiscriminatorColumn(name = "category", discriminatorType = DiscriminatorType.STRING)
 public class Ticket {
 
@@ -40,7 +44,7 @@ public class Ticket {
     private boolean userDeleted = false;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @JsonIgnore
     private List<TicketActivity> activities;
 
     @Column(name = "category", insertable = false, updatable = false)
@@ -88,6 +92,7 @@ public class Ticket {
         this.lastUpdate = lastUpdate;
     }
 
+    // JPA lifecycle callback: runs automatically just before the first INSERT.
     @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) {
@@ -96,6 +101,7 @@ public class Ticket {
         this.lastUpdate = this.createdAt;
     }
 
+    // JPA lifecycle callback: runs automatically just before every UPDATE.
     @PreUpdate
     protected void onUpdate() {
         this.lastUpdate = Instant.now();
@@ -149,6 +155,7 @@ public class Ticket {
                 '}';
     }
 
+    // @JsonProperty adds a computed value to the JSON response without storing it in the database.
     @JsonProperty("authorBachelorDescription")
     public String getAuthorBachelorDescription() {
         if (this.user != null && this.user.getBachelor() != null) {

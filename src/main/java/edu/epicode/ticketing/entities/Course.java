@@ -47,11 +47,13 @@ public class Course {
         this.bachelors = bachelors;
     }
     
+    // Both sides of the ManyToMany relationship must be updated manually in memory.
+    // JPA does not automatically sync the inverse side within the same session.
     public void addBachelor(Bachelor bachelor) {
         this.bachelors.add(bachelor);
         bachelor.getCourses().add(this);
     }
-    
+
     public void removeBachelor(Bachelor bachelor) {
         this.bachelors.remove(bachelor);
         bachelor.getCourses().remove(this);

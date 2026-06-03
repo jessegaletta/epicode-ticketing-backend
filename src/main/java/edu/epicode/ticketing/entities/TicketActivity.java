@@ -34,7 +34,7 @@ public class TicketActivity {
     @Column(nullable = false)
     private boolean userDeleted = false;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false)
     private boolean isStatusChange = false;
 
     public TicketActivity() {

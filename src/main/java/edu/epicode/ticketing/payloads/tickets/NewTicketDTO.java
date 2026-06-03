@@ -1,6 +1,7 @@
 package edu.epicode.ticketing.payloads.tickets;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record NewTicketDTO(
@@ -14,6 +15,7 @@ public record NewTicketDTO(
         boolean isAnonymous,
 
         @NotBlank(message = "Category is mandatory")
+        @Pattern(regexp = "ERROR|SUGGESTION|REQUEST|DOUBT", message = "Category must be one of: ERROR, SUGGESTION, REQUEST, DOUBT")
         String category,
 
         Long courseId,

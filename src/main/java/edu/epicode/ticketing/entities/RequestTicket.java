@@ -6,6 +6,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
+// Subclass of Ticket using JPA JOINED inheritance. Extra fields are in the "request_tickets" table.
+// @DiscriminatorValue sets the string written to the "category" column in the parent table.
 @Entity
 @Table(name = "request_tickets")
 @DiscriminatorValue("REQUEST")

@@ -6,6 +6,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+// Subclass of Ticket using JPA JOINED inheritance. Extra fields are in the "doubt_tickets" table.
+// @DiscriminatorValue sets the string written to the "category" column in the parent table.
 @Entity
 @Table(name = "doubt_tickets")
 @DiscriminatorValue("DOUBT")

@@ -41,7 +41,7 @@ public class PasswordResetService {
 
         Optional<User> userOpt = usersRepository.findByEmail(email.toLowerCase());
         
-        // I do not throw an error if the user doesn't exist, to prevent user enumeration.
+        // No error is thrown if the user does not exist, to prevent user enumeration.
         if (userOpt.isEmpty()) {
             return;
         }
@@ -52,6 +52,7 @@ public class PasswordResetService {
         Optional<PasswordResetToken> existingTokenOpt = tokenRepository.findByUser(user);
         PasswordResetToken myToken;
         
+        // If a token already exists for this user, it is updated rather than creating a new one.
         if (existingTokenOpt.isPresent()) {
             myToken = existingTokenOpt.get();
             myToken.setToken(tokenStr);

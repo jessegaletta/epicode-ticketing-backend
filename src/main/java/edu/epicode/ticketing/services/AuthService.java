@@ -46,6 +46,7 @@ public class AuthService {
                 return this.tokenTools.generateToken(found);
             } else {
                 found.setFailedLoginAttempts(found.getFailedLoginAttempts() + 1);
+                // After 5 failed attempts the account is locked and all admins are notified by email.
                 if (found.getFailedLoginAttempts() >= 5) {
                     found.setAccountLocked(true);
                     List<User> admins = usersRepository.findByRole(Role.ADMIN);
@@ -56,9 +57,9 @@ public class AuthService {
                 usersRepository.save(found);
             }
         } catch (NotFoundException e) {
-            // I do nothing here, I throw the exception below
+            // The same exception is thrown below in both cases to avoid revealing whether the email exists.
         }
-        
+
         // 3. If anything goes wrong -> 401
         throw new UnauthorizedException("Wrong credentials!");
     }

@@ -56,6 +56,7 @@ public class UsersService {
     public Page<UserListDTO> findAll(int page, int size, String sortBy, String sortDir, String search,
             User authenticatedUser) {
         Sort.Order order = new Sort.Order(Sort.Direction.fromString(sortDir), sortBy);
+        // Text fields are sorted case-insensitively so uppercase and lowercase letters are treated equally.
         if (sortBy.equalsIgnoreCase("firstName") || sortBy.equalsIgnoreCase("lastName") || sortBy.equalsIgnoreCase("email")) {
             order = order.ignoreCase();
         }
@@ -97,8 +98,6 @@ public class UsersService {
         mailgunSender.sendRegistrationEmail(newUser);
 
         User savedUser = this.usersRepository.save(newUser);
-
-        // UserSettings settings = this.userSettingsService.save(savedUser);
 
         System.out.println("Created user with id: " + savedUser.getId());
         System.out.println("Created user's settings with id: " + settings.getId());
@@ -249,6 +248,8 @@ public class UsersService {
         return getProfile(savedUser);
     }
 
+    // @Transactional ensures all three delete steps succeed or all roll back together,
+    // leaving the database in a consistent state if any step fails.
     @org.springframework.transaction.annotation.Transactional
     public void findByIdAndDelete(UUID userId) {
         User found = this.findById(userId);

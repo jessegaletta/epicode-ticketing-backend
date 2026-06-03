@@ -16,6 +16,8 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
     Optional<PasswordResetToken> findByUser(User user);
     void deleteByUser(User user);
 
+    // Bulk DELETE for all tokens expired before the given timestamp.
+    // Called at the start of each reset request to keep the table clean.
     @Modifying
     @Query("delete from PasswordResetToken t where t.expiryDate <= ?1")
     void deleteAllExpiredSince(LocalDateTime now);

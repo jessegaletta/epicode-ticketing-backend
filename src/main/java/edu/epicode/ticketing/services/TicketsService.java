@@ -31,13 +31,10 @@ public class TicketsService {
     private CourseService courseService;
 
     public Ticket save(NewTicketDTO body, User currentUser) {
-        User author = currentUser;
-        
-        // If the user chooses to be anonymous, I don't link the ticket to them.
-        if (body.isAnonymous()) {
-            author = null;
-        }
+        User author = body.isAnonymous() ? null : currentUser;
 
+        // A different subclass is instantiated based on the category.
+        // Each subclass maps to a separate table via JPA JOINED inheritance.
         Ticket newTicket;
         switch (body.category()) {
             case "ERROR":
@@ -109,6 +106,8 @@ public class TicketsService {
         ticket.setTitle(body.title());
         ticket.setDescription(body.description());
 
+        // Pattern matching instanceof (Java 16+): type check and cast in a single expression.
+        // Extra fields are updated only for the specific subclass they belong to.
         if (ticket instanceof ErrorTicket errorTicket) {
             if (body.moduleName() != null) errorTicket.setModuleName(body.moduleName());
             if (body.lessonName() != null) errorTicket.setLessonName(body.lessonName());
@@ -153,6 +152,8 @@ public class TicketsService {
         return ticketsRepository.save(ticket);
     }
 
+    // Extracted as a private method because the same authorization logic
+    // is reused in both findByIdAndUpdate and findByIdAndDelete.
     private void checkEditPermission(Ticket ticket, User currentUser) {
         if (currentUser == null) {
             throw new UnauthorizedException("You must be logged in to modify this ticket.");

@@ -1,6 +1,7 @@
 package edu.epicode.ticketing.controllers;
 
 import edu.epicode.ticketing.entities.Ticket;
+import edu.epicode.ticketing.entities.TicketStatus;
 import edu.epicode.ticketing.entities.User;
 import edu.epicode.ticketing.payloads.tickets.NewTicketDTO;
 import edu.epicode.ticketing.payloads.tickets.UpdateTicketDTO;
@@ -38,7 +39,7 @@ public class TicketsController {
             @RequestParam(defaultValue = "DESC") String sortDir,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) edu.epicode.ticketing.entities.TicketStatus status,
+            @RequestParam(required = false) TicketStatus status,
             @RequestParam(defaultValue = "false") boolean onlyOpen
     ) {
         return ticketsService.findAll(page, size, sortBy, sortDir, search, category, status, onlyOpen);

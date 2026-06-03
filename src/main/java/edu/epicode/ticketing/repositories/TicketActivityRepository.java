@@ -15,6 +15,8 @@ public interface TicketActivityRepository extends JpaRepository<TicketActivity, 
 
     List<TicketActivity> findByTicketIdOrderByCreatedAtDesc(Long ticketId);
 
+    // @Modifying + @Query is used here because Spring Data cannot auto-generate an UPDATE
+    // query from a method name alone.
     @Modifying
     @Query("UPDATE TicketActivity a SET a.user = null, a.userDeleted = true WHERE a.user = :user")
     void detachUserFromActivities(@Param("user") User user);

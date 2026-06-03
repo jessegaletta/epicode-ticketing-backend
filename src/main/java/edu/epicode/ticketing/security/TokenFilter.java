@@ -33,16 +33,15 @@ public class TokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         try {
-            // 1. Check if Authorization Header is present, if I don't -> 401
-            //2. If authorization Header is there, check if it is in the right format:
-            // "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NzcxMDQ1MTQsImV4cCI6MTc3NzE5MDkxNCwic3ViIjoiODVhNTQwMzctZTc2OC00ODY1LTgyNGQtODNjOGJkOGU0OWYwIn0.Q2JNCYgQkPlwS2aXr-_6yZlozSd8ilFOuS6f7XE1Lks""
+            // 1. If the Authorization header is missing, the request continues without authentication.
+            // 2. If the header is present, it must follow the format: "Bearer <token>"
             String authorizationHeader = request.getHeader("Authorization");
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // 3. if header is there and value is in the right format, I extract the token from it
+            // 3. The token string is extracted by removing the "Bearer " prefix.
             String accessToken = authorizationHeader.replace("Bearer ", "");
 
             // 4. Verify the token (not expired, not manipulated, not malformed)
@@ -71,6 +70,8 @@ public class TokenFilter extends OncePerRequestFilter {
         }
     }
 
+    // shouldNotFilter returns true for /auth/** paths, which excludes them from JWT verification.
+    // Login and register endpoints do not require an existing token.
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return new AntPathMatcher().match("/auth/**", request.getServletPath());

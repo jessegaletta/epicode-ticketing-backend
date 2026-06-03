@@ -37,7 +37,7 @@ public class AuthController {
     //2.
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public NewUserResponseDTO NewUserResponseDTO(@Validated @RequestBody NewUserDTO body){
+    public NewUserResponseDTO register(@Validated @RequestBody NewUserDTO body){
         return this.usersService.saveUser(body);
     }
     

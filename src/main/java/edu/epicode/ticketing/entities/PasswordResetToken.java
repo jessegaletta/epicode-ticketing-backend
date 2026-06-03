@@ -14,6 +14,8 @@ public class PasswordResetToken {
     @Column(nullable = false, unique = true)
     private String token;
 
+    // FetchType.EAGER loads the User immediately when the token is fetched.
+    // This avoids a lazy-loading error since the User is always needed when working with the token.
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;

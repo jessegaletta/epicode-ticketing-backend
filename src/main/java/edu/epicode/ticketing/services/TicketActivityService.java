@@ -26,10 +26,7 @@ public class TicketActivityService {
     public TicketActivity save(Long ticketId, NewActivityDTO body, User currentUser) {
         Ticket ticket = ticketsService.findById(ticketId);
         
-        User author = currentUser;
-        if (body.isAnonymous()) {
-            author = null;
-        }
+        User author = body.isAnonymous() ? null : currentUser;
 
         TicketActivity activity = new TicketActivity(body.text(), author, ticket);
         return activityRepository.save(activity);
