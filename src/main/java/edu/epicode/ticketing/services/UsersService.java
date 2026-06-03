@@ -267,16 +267,14 @@ public class UsersService {
     }
 
     public UserProfileDTO uploadProfilePicture(UUID userId, MultipartFile file) throws IOException {
-        // Validate size (max 10MB for Cloudinary standard free tier)
         long maxSize = 10 * 1024 * 1024;
         if (file.getSize() > maxSize) {
             throw new ValidationException("File size exceeds 10MB limit.");
         }
 
-        // Validate format (Cloudinary supports standard image formats)
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new ValidationException("Invalid file format. Only images are allowed.");
+        byte[] header = file.getBytes();
+        if (!isValidImageMagicBytes(header)) {
+            throw new ValidationException("Invalid file format. Only JPEG, PNG, GIF and WebP are allowed.");
         }
 
         // Check if user exist
@@ -292,6 +290,16 @@ public class UsersService {
         } catch (IOException e) {
             throw new RuntimeException("Error uploading image");
         }
+    }
+
+    private boolean isValidImageMagicBytes(byte[] bytes) {
+        if (bytes.length < 4) return false;
+        if (bytes[0] == (byte)0xFF && bytes[1] == (byte)0xD8 && bytes[2] == (byte)0xFF) return true; // JPEG
+        if (bytes[0] == (byte)0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47) return true; // PNG
+        if (bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x38) return true; // GIF
+        if (bytes.length >= 12 && bytes[0] == 0x52 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x46
+                && bytes[8] == 0x57 && bytes[9] == 0x45 && bytes[10] == 0x42 && bytes[11] == 0x50) return true; // WebP
+        return false;
     }
 
     public User findByEmail(String email) {
