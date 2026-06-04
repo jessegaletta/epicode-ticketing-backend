@@ -40,4 +40,14 @@ public interface TicketsRepository extends JpaRepository<Ticket, Long> {
             @Param("search") String search,
             @Param("onlyOpen") boolean onlyOpen,
             Pageable pageable);
+
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
+           "FROM error_tickets e " +
+           "WHERE e.course_id = :courseId", nativeQuery = true)
+    boolean existsErrorTicketByCourseId(@Param("courseId") Long courseId);
+
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
+           "FROM doubt_tickets d " +
+           "WHERE d.course_id = :courseId", nativeQuery = true)
+    boolean existsDoubtTicketByCourseId(@Param("courseId") Long courseId);
 }

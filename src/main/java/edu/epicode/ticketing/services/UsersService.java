@@ -16,6 +16,7 @@ import edu.epicode.ticketing.entities.Role;
 import edu.epicode.ticketing.repositories.UsersRepository;
 import edu.epicode.ticketing.repositories.TicketsRepository;
 import edu.epicode.ticketing.repositories.TicketActivityRepository;
+import edu.epicode.ticketing.repositories.PasswordResetTokenRepository;
 import edu.epicode.ticketing.tools.MailgunSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,8 @@ public class UsersService {
     private TicketsRepository ticketsRepository;
     @Autowired
     private TicketActivityRepository ticketActivityRepository;
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
     @Autowired
     private Cloudinary cloudinaryUploader;
     @Autowired
@@ -263,6 +266,7 @@ public class UsersService {
 
         this.ticketsRepository.detachUserFromTickets(found);
         this.ticketActivityRepository.detachUserFromActivities(found);
+        this.passwordResetTokenRepository.deleteByUser(found);
         this.usersRepository.delete(found);
     }
 

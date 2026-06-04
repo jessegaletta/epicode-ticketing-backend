@@ -105,6 +105,8 @@ Password: root
 All variables are loaded from `env.properties` (excluded from version control). Create the file in the project root with the following structure:
 
 ```properties
+PG_SERVER_NAME = localhost
+PG_SERVER_PORT = 5432
 PG_DB_NAME = your_database_name
 PG_USERNAME = your_db_username
 PG_PASSWORD = your_db_password
@@ -118,6 +120,7 @@ MAILGUN_API_KEY = your_mailgun_api_key
 MAILGUN_SENDER = no-reply@yourdomain.com
 
 JWT_SECRET = your_long_random_secret_key
+FRONTEND_URL = http://localhost:5173
 ```
 
 ---

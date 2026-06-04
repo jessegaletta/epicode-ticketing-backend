@@ -4,9 +4,11 @@ import edu.epicode.ticketing.entities.Bachelor;
 import edu.epicode.ticketing.entities.Course;
 import edu.epicode.ticketing.entities.User;
 import edu.epicode.ticketing.exceptions.NotFoundException;
+import edu.epicode.ticketing.exceptions.ValidationException;
 import edu.epicode.ticketing.payloads.courses.CourseDTO;
 import edu.epicode.ticketing.repositories.BachelorRepository;
 import edu.epicode.ticketing.repositories.CourseRepository;
+import edu.epicode.ticketing.repositories.TicketsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,9 @@ public class CourseService {
 
     @Autowired
     private BachelorRepository bachelorRepository;
+
+    @Autowired
+    private TicketsRepository ticketsRepository;
 
     public Page<Course> getCourses(int page, int size, String sortBy, String sortDir, String search, User currentUser) {
         if (size > 100) size = 100;
@@ -110,6 +115,11 @@ public class CourseService {
 
     public void delete(Long id) {
         Course found = this.findById(id);
+        
+        if (ticketsRepository.existsErrorTicketByCourseId(id) || ticketsRepository.existsDoubtTicketByCourseId(id)) {
+            throw new ValidationException("Cannot delete this course because there are tickets associated with it.");
+        }
+
         // Remove course from all bachelors before deleting
         for (Bachelor b : found.getBachelors()) {
             b.getCourses().remove(found);
