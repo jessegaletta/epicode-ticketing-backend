@@ -31,7 +31,7 @@ public class PasswordResetService {
     @Autowired
     private PasswordEncoder bcrypt;
 
-    @Value("${frontend.url:http://localhost:5173}")
+    @Value("${cors.allowed.origins:http://localhost:5173}")
     private String frontendUrl;
 
     @Transactional
