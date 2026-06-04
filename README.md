@@ -80,7 +80,7 @@ The application runs on port `3001` by default.
 ### Steps
 
 1. Create a PostgreSQL database.
-2. Copy `env.properties.example` to `env.properties` and fill in all values (see section below).
+2. Create an `env.properties` file in the project root and fill in all values (see section below).
 3. Run the application:
 
 ```bash
