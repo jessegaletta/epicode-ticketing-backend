@@ -19,8 +19,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/tickets")
 public class TicketController {
 
+    private final TicketsService ticketsService;
+
     @Autowired
-    private TicketsService ticketsService;
+    public TicketController(TicketsService ticketsService) {
+        this.ticketsService = ticketsService;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
