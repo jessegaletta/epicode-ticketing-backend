@@ -44,7 +44,7 @@ The application runs on port `3001` by default.
 | Technology | Version |
 |---|---|
 | Java | 21 |
-| Spring Boot | 4.0.5 |
+| Spring Boot | 4.0.6 |
 | Spring Security + JWT (jjwt) | 0.13.0 |
 | Spring Data JPA / Hibernate | — |
 | PostgreSQL | — |
@@ -81,11 +81,20 @@ The application runs on port `3001` by default.
 
 1. Create a PostgreSQL database.
 2. Create an `env.properties` file in the project root and fill in all values (see section below).
-3. Run the application:
+3. Generate the Maven wrapper (if not already present):
+   ```bash
+   mvn wrapper:wrapper
+   ```
+4. Run the application:
 
-```bash
-./mvnw spring-boot:run
-```
+   - **Linux / macOS**:
+     ```bash
+     ./mvnw spring-boot:run
+     ```
+   - **Windows**:
+     ```cmd
+     .\mvnw spring-boot:run
+     ```
 
 The server starts on `http://localhost:3001`.
 
