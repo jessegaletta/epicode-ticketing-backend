@@ -46,6 +46,41 @@
           "response": []
         },
         {
+          "name": "[Admin] Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailAdmin}}\",\n  \"password\": \"{{passwordAdmin}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Register",
           "request": {
             "auth": {
@@ -1034,6 +1069,15 @@
     },
     {
       "key": "userId",
+      "value": "",
+      "description": "For user endpoints"
+    },
+    {
+      "key": "emailAdmin",
+      "value": ""
+    },
+    {
+      "key": "passwordAdmin",
       "value": ""
     }
   ]
