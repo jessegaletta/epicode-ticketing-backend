@@ -3,9 +3,9 @@ package edu.epicode.ticketing.controllers;
 import edu.epicode.ticketing.entities.Ticket;
 import edu.epicode.ticketing.entities.TicketStatus;
 import edu.epicode.ticketing.entities.User;
+import edu.epicode.ticketing.payloads.tickets.ChangeStatusDTO;
 import edu.epicode.ticketing.payloads.tickets.NewTicketDTO;
 import edu.epicode.ticketing.payloads.tickets.UpdateTicketDTO;
-import edu.epicode.ticketing.payloads.tickets.ChangeStatusDTO;
 import edu.epicode.ticketing.services.TicketsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tickets")
-public class TicketsController {
+public class TicketController {
 
     @Autowired
     private TicketsService ticketsService;
