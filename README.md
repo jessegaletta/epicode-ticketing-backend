@@ -127,4 +127,5 @@ FRONTEND_URL = http://localhost:5173
 
 ## Postman Collection
 
-> The Postman collection covering all implemented endpoints will be added to this repository soon.
+> The Postman collection covering all implemented endpoints can be found in the `test-api` folder:
+> [`epicode-ticketing-backend.postman_collection.json`](test-api/epicode-ticketing-backend.postman_collection.json)
