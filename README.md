@@ -52,6 +52,40 @@ The application runs on port `3001` by default.
 | Mailgun (via Unirest) | 4.8.1 |
 | Bean Validation | — |
 
+## Core Features and Business Logic
+
+The backend is built around a set of distinct services and controllers, each encapsulating specific domain logic, permissions, and security measures.
+
+### 1. Authentication & Security (`AuthService`, `AuthController`)
+- **JWT Authentication**: Securely authenticates users and generates JSON Web Tokens for stateless sessions.
+- **Account Protection**: Tracks failed login attempts. If a user fails to log in 5 consecutive times, their account is automatically locked to prevent brute-force attacks.
+- **Admin Notifications**: When an account gets locked, the system automatically dispatches an email notification to all `ADMIN` users via Mailgun.
+- **Password Recovery**: Generates secure, time-sensitive tokens for password resets (`PasswordResetService`), emailing the user the recovery link.
+
+### 2. User & Profile Management (`UsersService`, `UserController`)
+- **Registration & Settings**: New users automatically get a `UserSettings` record instantiated with default values (theme, timezone, date formats) upon creation.
+- **Profile Picture Upload**: Integrates with **Cloudinary**. Before uploading, the file is strictly validated at the byte level (checking magic numbers) to ensure it is a valid image (JPEG, PNG, GIF, WebP) and respects the 10MB limit.
+- **Safe Deletion**: Deleting a user is wrapped in a `@Transactional` context. It safely detaches the user from their tickets, activities, and password reset tokens before removal. It also prevents the deletion of the last remaining Admin in the system.
+- **Search & Pagination**: Uses Spring Data JPA `Pageable` for paginated results, implementing case-insensitive, multi-field search logic.
+
+### 3. Tickets Management (`TicketsService`, `TicketController`)
+- **Polymorphic Entities**: Uses JPA `JOINED` inheritance. Based on the selected category, a specific ticket subclass is instantiated (`ErrorTicket`, `SuggestionTicket`, `RequestTicket`, `DoubtTicket`), each mapped to its own specialized database table.
+- **Dynamic Updates**: Uses Java 16+ `instanceof` pattern matching to dynamically update specific fields depending on the ticket's runtime subclass.
+- **Permissions Validation**:
+  - **Anonymous Tickets**: Created without an associated user (`null` author). Can only be edited by Admins.
+  - **Owned Tickets**: Standard users can only modify their own tickets.
+  - **Status Updates**: Restricted to `FACULTY` and `ADMIN`. Whenever a status is changed, an automated system entry is logged in the ticket's activity stream (`TicketActivityService`).
+
+### 4. Academic Structure
+
+**Degree Programs (`BachelorService`, `BachelorController`)**
+- **Data Integrity**: Prevents the deletion of a Bachelor if it has active students enrolled or if it is linked to existing courses.
+
+**Course Management (`CourseService`, `CourseController`)**
+- **Context-Aware Fetching**: Automatically filters the returned courses based on the current user's profile. If a `STUDENT` requests the course list, they only see courses relevant to their assigned Bachelor.
+- **Bi-directional Associations**: Safely manages the many-to-many relationship with Bachelors, ensuring both sides of the association are synchronized during updates and deletions.
+- **Safe Deletion**: Prevents the deletion of a course if it is actively referenced by any `ErrorTicket` or `DoubtTicket`.
+
 ---
 
 ## Data Model
