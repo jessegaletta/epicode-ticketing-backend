@@ -44,7 +44,7 @@ The application runs on port `3001` by default.
 | Technology | Version |
 |---|---|
 | Java | 21 |
-| Spring Boot | 4.0.5 |
+| Spring Boot | 4.0.6 |
 | Spring Security + JWT (jjwt) | 0.13.0 |
 | Spring Data JPA / Hibernate | — |
 | PostgreSQL | — |
